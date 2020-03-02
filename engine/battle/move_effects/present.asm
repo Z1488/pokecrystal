@@ -59,7 +59,7 @@ BattleCommand_Present:
 	jr z, .got_hp_fn_pointer
 	ld hl, AICheckEnemyMaxHP
 .got_hp_fn_pointer
-	ld a, BANK(AICheckPlayerMaxHP)
+	ld a, BANK(AICheckPlayerMaxHP) ; aka BANK(AICheckEnemyMaxHP)
 	rst FarCall
 	jr c, .already_fully_healed
 
@@ -70,7 +70,7 @@ BattleCommand_Present:
 	call CallBattleCore
 	call BattleCommand_SwitchTurn
 	ld hl, RegainedHealthText
-	call StdBattleTextBox
+	call StdBattleTextbox
 	call BattleCommand_SwitchTurn
 	call UpdateOpponentInParty
 	jr .do_animation
@@ -81,7 +81,7 @@ BattleCommand_Present:
 	jr nc, .do_animation
 	call AnimateFailedMove
 	ld hl, RefusedGiftText
-	call StdBattleTextBox
+	call StdBattleTextbox
 .do_animation
 	jp EndMoveEffect
 

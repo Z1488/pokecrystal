@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const ROUTE12SUPERRODHOUSE_FISHING_GURU
 
 Route12SuperRodHouse_MapScripts:
@@ -15,7 +15,7 @@ Route12SuperRodHouseFishingGuruScript:
 	yesorno
 	iffalse .Refused
 	writetext GiveSuperRodText
-	buttonsound
+	promptbutton
 	verbosegiveitem SUPER_ROD
 	iffalse .NoRoom
 	setevent EVENT_GOT_SUPER_ROD

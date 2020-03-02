@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const VICTORYROADGATE_OFFICER
 	const VICTORYROADGATE_BLACK_BELT1
 	const VICTORYROADGATE_BLACK_BELT2
@@ -18,15 +18,15 @@ VictoryRoadGate_MapScripts:
 
 VictoryRoadGateBadgeCheckScene:
 	turnobject PLAYER, LEFT
-	jump VictoryRoadGateBadgeCheckScript
+	sjump VictoryRoadGateBadgeCheckScript
 
 VictoryRoadGateOfficerScript:
 	faceplayer
 VictoryRoadGateBadgeCheckScript:
 	opentext
 	writetext VictoryRoadGateOfficerText
-	buttonsound
-	checkcode VAR_BADGES
+	promptbutton
+	readvar VAR_BADGES
 	ifgreater NUM_JOHTO_BADGES - 1, .AllEightBadges
 	writetext VictoryRoadGateNotEnoughBadgesText
 	waitbutton

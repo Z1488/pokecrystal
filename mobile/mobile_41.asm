@@ -1016,10 +1016,10 @@ Function106464::
 	ld hl, vTiles2 tile "▲" ; $61
 	lb bc, BANK(FontsExtra2_UpArrowGFX), 1
 	call Get2bpp
-	ld de, GFX_106514
+	ld de, MobileDialingFrameGFX
 	ld hl, vTiles2 tile "☎" ; $62
 	ld c, 9
-	ld b, BANK(GFX_106514)
+	ld b, BANK(MobileDialingFrameGFX)
 	call Get2bpp
 	ld de, $40b0
 	ld hl, vTiles2 tile $6b
@@ -1029,7 +1029,7 @@ Function106464::
 	ret
 
 Function10649b:
-	ld a, [wTextBoxFrame]
+	ld a, [wTextboxFrame]
 	maskbits NUM_FRAMES
 	ld bc, 6 * LEN_1BPP_TILE
 	ld hl, Frames
@@ -1041,9 +1041,9 @@ Function10649b:
 	ld b, BANK(Frames)
 	call Function1064c3
 	ld hl, vTiles2 tile " " ; $7f
-	ld de, TextBoxSpaceGFX
+	ld de, TextboxSpaceGFX
 	ld c, 1
-	ld b, BANK(TextBoxSpaceGFX)
+	ld b, BANK(TextboxSpaceGFX)
 	call Function1064c3
 	ret
 
@@ -1103,5 +1103,5 @@ Function10650a:
 	call Get2bpp
 	ret
 
-GFX_106514:
-INCBIN "gfx/unknown/106514.2bpp"
+MobileDialingFrameGFX:
+INCBIN "gfx/mobile/dialing_frame.2bpp"

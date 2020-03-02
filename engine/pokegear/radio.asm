@@ -142,7 +142,7 @@ PrintRadioLine:
 	call PlaceHLTextAtBC
 	jr .skip
 .print
-	call PrintTextBoxText
+	call PrintTextboxText
 .skip
 	ld a, RADIO_SCROLL
 	ld [wCurRadioLine], a
@@ -304,34 +304,28 @@ OaksPKMNTalk6:
 	jp NextRadioLine
 
 OPT_IntroText1:
-	; MARY: PROF.OAK'S
 	text_far _OPT_IntroText1
-	db "@"
+	text_end
 
 OPT_IntroText2:
-	; #MON TALK!
 	text_far _OPT_IntroText2
-	db "@"
+	text_end
 
 OPT_IntroText3:
-	; With me, MARY!
 	text_far _OPT_IntroText3
-	db "@"
+	text_end
 
 OPT_OakText1:
-	; OAK: @ @
 	text_far _OPT_OakText1
-	db "@"
+	text_end
 
 OPT_OakText2:
-	; may be seen around
 	text_far _OPT_OakText2
-	db "@"
+	text_end
 
 OPT_OakText3:
-	; @ .
 	text_far _OPT_OakText3
-	db "@"
+	text_end
 
 OaksPKMNTalk7:
 	ld a, [wCurPartySpecies]
@@ -342,9 +336,8 @@ OaksPKMNTalk7:
 	jp NextRadioLine
 
 OPT_MaryText1:
-	; MARY: @ 's
 	text_far _OPT_MaryText1
-	db "@"
+	text_end
 
 OaksPKMNTalk8:
 	; 0-15 are all valid indexes into .Adverbs,
@@ -364,102 +357,86 @@ OaksPKMNTalk8:
 
 .Adverbs:
 ; there are NUM_OAKS_POKEMON_TALK_ADVERBS entries
-	dw .sweetadorably
-	dw .wigglyslickly
-	dw .aptlynamed
-	dw .undeniablykindof
-	dw .unbearably
-	dw .wowimpressively
-	dw .almostpoisonously
-	dw .sensually
-	dw .mischievously
-	dw .topically
-	dw .addictively
-	dw .looksinwater
-	dw .evolutionmustbe
-	dw .provocatively
-	dw .flippedout
-	dw .heartmeltingly
+	dw .OPT_SweetAdorablyText
+	dw .OPT_WigglySlicklyText
+	dw .OPT_AptlyNamedText
+	dw .OPT_UndeniablyKindOfText
+	dw .OPT_UnbearablyText
+	dw .OPT_WowImpressivelyText
+	dw .OPT_AlmostPoisonouslyText
+	dw .OPT_SensuallyText
+	dw .OPT_MischievouslyText
+	dw .OPT_TopicallyText
+	dw .OPT_AddictivelyText
+	dw .OPT_LooksInWaterText
+	dw .OPT_EvolutionMustBeText
+	dw .OPT_ProvocativelyText
+	dw .OPT_FlippedOutText
+	dw .OPT_HeartMeltinglyText
 
-.sweetadorably
-	; sweet and adorably
-	text_far OPT_SweetAdorably
-	db "@"
+.OPT_SweetAdorablyText:
+	text_far _OPT_SweetAdorablyText
+	text_end
 
-.wigglyslickly
-	; wiggly and slickly
-	text_far OPT_WigglySlickly
-	db "@"
+.OPT_WigglySlicklyText:
+	text_far _OPT_WigglySlicklyText
+	text_end
 
-.aptlynamed
-	; aptly named and
-	text_far OPT_AptlyNamed
-	db "@"
+.OPT_AptlyNamedText:
+	text_far _OPT_AptlyNamedText
+	text_end
 
-.undeniablykindof
-	; undeniably kind of
-	text_far OPT_UndeniablyKindOf
-	db "@"
+.OPT_UndeniablyKindOfText:
+	text_far _OPT_UndeniablyKindOfText
+	text_end
 
-.unbearably
-	; so, so unbearably
-	text_far OPT_Unbearably
-	db "@"
+.OPT_UnbearablyText:
+	text_far _OPT_UnbearablyText
+	text_end
 
-.wowimpressively
-	; wow, impressively
-	text_far OPT_WowImpressively
-	db "@"
+.OPT_WowImpressivelyText:
+	text_far _OPT_WowImpressivelyText
+	text_end
 
-.almostpoisonously
-	; almost poisonously
-	text_far OPT_AlmostPoisonously
-	db "@"
+.OPT_AlmostPoisonouslyText:
+	text_far _OPT_AlmostPoisonouslyText
+	text_end
 
-.sensually
-	; ooh, so sensually
-	text_far OPT_Sensually
-	db "@"
+.OPT_SensuallyText:
+	text_far _OPT_SensuallyText
+	text_end
 
-.mischievously
-	; so mischievously
-	text_far OPT_Mischievously
-	db "@"
+.OPT_MischievouslyText:
+	text_far _OPT_MischievouslyText
+	text_end
 
-.topically
-	; so very topically
-	text_far OPT_Topically
-	db "@"
+.OPT_TopicallyText:
+	text_far _OPT_TopicallyText
+	text_end
 
-.addictively
-	; sure addictively
-	text_far OPT_Addictively
-	db "@"
+.OPT_AddictivelyText:
+	text_far _OPT_AddictivelyText
+	text_end
 
-.looksinwater
-	; looks in water is
-	text_far OPT_LooksInWater
-	db "@"
+.OPT_LooksInWaterText:
+	text_far _OPT_LooksInWaterText
+	text_end
 
-.evolutionmustbe
-	; evolution must be
-	text_far OPT_EvolutionMustBe
-	db "@"
+.OPT_EvolutionMustBeText:
+	text_far _OPT_EvolutionMustBeText
+	text_end
 
-.provocatively
-	; provocatively
-	text_far OPT_Provocatively
-	db "@"
+.OPT_ProvocativelyText:
+	text_far _OPT_ProvocativelyText
+	text_end
 
-.flippedout
-	; so flipped out and
-	text_far OPT_FlippedOut
-	db "@"
+.OPT_FlippedOutText:
+	text_far _OPT_FlippedOutText
+	text_end
 
-.heartmeltingly
-	; heart-meltingly
-	text_far OPT_HeartMeltingly
-	db "@"
+.OPT_HeartMeltinglyText:
+	text_far _OPT_HeartMeltinglyText
+	text_end
 
 OaksPKMNTalk9:
 	; 0-15 are all valid indexes into .Adjectives,
@@ -487,102 +464,86 @@ OaksPKMNTalk9:
 
 .Adjectives:
 ; there are NUM_OAKS_POKEMON_TALK_ADJECTIVES entries
-	dw .cute
-	dw .weird
-	dw .pleasant
-	dw .boldsortof
-	dw .frightening
-	dw .suavedebonair
-	dw .powerful
-	dw .exciting
-	dw .groovy
-	dw .inspiring
-	dw .friendly
-	dw .hothothot
-	dw .stimulating
-	dw .guarded
-	dw .lovely
-	dw .speedy
+	dw .OPT_CuteText
+	dw .OPT_WeirdText
+	dw .OPT_PleasantText
+	dw .OPT_BoldSortOfText
+	dw .OPT_FrighteningText
+	dw .OPT_SuaveDebonairText
+	dw .OPT_PowerfulText
+	dw .OPT_ExcitingText
+	dw .OPT_GroovyText
+	dw .OPT_InspiringText
+	dw .OPT_FriendlyText
+	dw .OPT_HotHotHotText
+	dw .OPT_StimulatingText
+	dw .OPT_GuardedText
+	dw .OPT_LovelyText
+	dw .OPT_SpeedyText
 
-.cute
-	; cute.
-	text_far OPT_Cute
-	db "@"
+.OPT_CuteText:
+	text_far _OPT_CuteText
+	text_end
 
-.weird
-	; weird.
-	text_far OPT_Weird
-	db "@"
+.OPT_WeirdText:
+	text_far _OPT_WeirdText
+	text_end
 
-.pleasant
-	; pleasant.
-	text_far OPT_Pleasant
-	db "@"
+.OPT_PleasantText:
+	text_far _OPT_PleasantText
+	text_end
 
-.boldsortof
-	; bold, sort of.
-	text_far OPT_BoldSortOf
-	db "@"
+.OPT_BoldSortOfText:
+	text_far _OPT_BoldSortOfText
+	text_end
 
-.frightening
-	; frightening.
-	text_far OPT_Frightening
-	db "@"
+.OPT_FrighteningText:
+	text_far _OPT_FrighteningText
+	text_end
 
-.suavedebonair
-	; suave & debonair!
-	text_far OPT_SuaveDebonair
-	db "@"
+.OPT_SuaveDebonairText:
+	text_far _OPT_SuaveDebonairText
+	text_end
 
-.powerful
-	; powerful.
-	text_far OPT_Powerful
-	db "@"
+.OPT_PowerfulText:
+	text_far _OPT_PowerfulText
+	text_end
 
-.exciting
-	; exciting.
-	text_far OPT_Exciting
-	db "@"
+.OPT_ExcitingText:
+	text_far _OPT_ExcitingText
+	text_end
 
-.groovy
-	; groovy!
-	text_far OPT_Groovy
-	db "@"
+.OPT_GroovyText:
+	text_far _OPT_GroovyText
+	text_end
 
-.inspiring
-	; inspiring.
-	text_far OPT_Inspiring
-	db "@"
+.OPT_InspiringText:
+	text_far _OPT_InspiringText
+	text_end
 
-.friendly
-	; friendly.
-	text_far OPT_Friendly
-	db "@"
+.OPT_FriendlyText:
+	text_far _OPT_FriendlyText
+	text_end
 
-.hothothot
-	; hot, hot, hot!
-	text_far OPT_HotHotHot
-	db "@"
+.OPT_HotHotHotText:
+	text_far _OPT_HotHotHotText
+	text_end
 
-.stimulating
-	; stimulating.
-	text_far OPT_Stimulating
-	db "@"
+.OPT_StimulatingText:
+	text_far _OPT_StimulatingText
+	text_end
 
-.guarded
-	; guarded.
-	text_far OPT_Guarded
-	db "@"
+.OPT_GuardedText:
+	text_far _OPT_GuardedText
+	text_end
 
-.lovely
-	; lovely.
-	text_far OPT_Lovely
-	db "@"
+.OPT_LovelyText:
+	text_far _OPT_LovelyText
+	text_end
 
-.speedy
-	; speedy.
-	text_far OPT_Speedy
-	db "@"
+.OPT_SpeedyText:
+	text_far _OPT_SpeedyText
+	text_end
 
 OaksPKMNTalk10:
 	farcall RadioMusicRestartPokemonChannel
@@ -598,12 +559,11 @@ OaksPKMNTalk10:
 	ret
 
 OPT_PokemonChannelText:
-	; #MON
 	text_far _OPT_PokemonChannelText
-	db "@"
+	text_end
 
 OPT_RestartText:
-	db "@"
+	text_end
 
 OaksPKMNTalk11:
 	ld hl, wRadioTextDelay
@@ -848,9 +808,8 @@ CopyDexEntryPart2:
 	ret
 
 PokedexShowText:
-	; @ @
 	text_far _PokedexShowText
-	db "@"
+	text_end
 
 BenMonMusic1:
 	call StartPokemonMusicChannel
@@ -875,7 +834,7 @@ FernMonMusic1:
 	jp NextRadioLine
 
 FernMonMusic2:
-	ld hl, FernIntroMusic2
+	ld hl, FernIntroText2
 	ld a, POKEMON_MUSIC_4
 	jp NextRadioLine
 
@@ -920,54 +879,44 @@ StartPokemonMusicChannel:
 	ret
 
 BenIntroText1:
-	; BEN: #MON MUSIC
 	text_far _BenIntroText1
-	db "@"
+	text_end
 
 BenIntroText2:
-	; CHANNEL!
 	text_far _BenIntroText2
-	db "@"
+	text_end
 
 BenIntroText3:
-	; It's me, DJ BEN!
 	text_far _BenIntroText3
-	db "@"
+	text_end
 
 FernIntroText1:
-	; FERN: #MUSIC!
 	text_far _FernIntroText1
-	db "@"
+	text_end
 
-FernIntroMusic2:
-	; With DJ FERN!
+FernIntroText2:
 	text_far _FernIntroText2
-	db "@"
+	text_end
 
 BenFernText1:
-	; Today's @ ,
 	text_far _BenFernText1
-	db "@"
+	text_end
 
 BenFernText2A:
-	; so let us jam to
 	text_far _BenFernText2A
-	db "@"
+	text_end
 
 BenFernText2B:
-	; so chill out to
 	text_far _BenFernText2B
-	db "@"
+	text_end
 
 BenFernText3A:
-	; #MON March!
 	text_far _BenFernText3A
-	db "@"
+	text_end
 
 BenFernText3B:
-	; #MON Lullaby!
 	text_far _BenFernText3B
-	db "@"
+	text_end
 
 LuckyNumberShow1:
 	call StartRadioStation
@@ -1061,69 +1010,56 @@ LuckyNumberShow15:
 	jp NextRadioLine
 
 LC_Text1:
-	; REED: Yeehaw! How
 	text_far _LC_Text1
-	db "@"
+	text_end
 
 LC_Text2:
-	; y'all doin' now?
 	text_far _LC_Text2
-	db "@"
+	text_end
 
 LC_Text3:
-	; Whether you're up
 	text_far _LC_Text3
-	db "@"
+	text_end
 
 LC_Text4:
-	; or way down low,
 	text_far _LC_Text4
-	db "@"
+	text_end
 
 LC_Text5:
-	; don't you miss the
 	text_far _LC_Text5
-	db "@"
+	text_end
 
 LC_Text6:
-	; LUCKY NUMBER SHOW!
 	text_far _LC_Text6
-	db "@"
+	text_end
 
 LC_Text7:
-	; This week's Lucky
 	text_far _LC_Text7
-	db "@"
+	text_end
 
 LC_Text8:
-	; Number is @ !
 	text_far _LC_Text8
-	db "@"
+	text_end
 
 LC_Text9:
-	; I'll repeat that!
 	text_far _LC_Text9
-	db "@"
+	text_end
 
 LC_Text10:
-	; Match it and go to
 	text_far _LC_Text10
-	db "@"
+	text_end
 
 LC_Text11:
-	; the RADIO TOWER!
 	text_far _LC_Text11
-	db "@"
+	text_end
 
 LC_DragText1:
-	; …Repeating myself
 	text_far _LC_DragText1
-	db "@"
+	text_end
 
 LC_DragText2:
-	; gets to be a drag…
 	text_far _LC_DragText2
-	db "@"
+	text_end
 
 PeoplePlaces1:
 	call StartRadioStation
@@ -1147,19 +1083,16 @@ PeoplePlaces3:
 	jp NextRadioLine
 
 PnP_Text1:
-	; PLACES AND PEOPLE!
 	text_far _PnP_Text1
-	db "@"
+	text_end
 
 PnP_Text2:
-	; Brought to you by
 	text_far _PnP_Text2
-	db "@"
+	text_end
 
 PnP_Text3:
-	; me, DJ LILY!
 	text_far _PnP_Text3
-	db "@"
+	text_end
 
 PeoplePlaces4: ; People
 	call Random
@@ -1199,9 +1132,8 @@ PeoplePlaces4: ; People
 INCLUDE "data/radio/pnp_hidden_people.asm"
 
 PnP_Text4:
-	; @  @ @
 	text_far _PnP_Text4
-	db "@"
+	text_end
 
 PeoplePlaces5:
 	; 0-15 are all valid indexes into .Adjectives,
@@ -1230,108 +1162,92 @@ PeoplePlaces5:
 
 .Adjectives:
 ; there are NUM_PNP_PEOPLE_ADJECTIVES entries
-	dw PnP_cute
-	dw PnP_lazy
-	dw PnP_happy
-	dw PnP_noisy
-	dw PnP_precocious
-	dw PnP_bold
-	dw PnP_picky
-	dw PnP_sortofok
-	dw PnP_soso
-	dw PnP_great
-	dw PnP_mytype
-	dw PnP_cool
-	dw PnP_inspiring
-	dw PnP_weird
-	dw PnP_rightforme
-	dw PnP_odd
+	dw PnP_CuteText
+	dw PnP_LazyText
+	dw PnP_HappyText
+	dw PnP_NoisyText
+	dw PnP_PrecociousText
+	dw PnP_BoldText
+	dw PnP_PickyText
+	dw PnP_SortOfOKText
+	dw PnP_SoSoText
+	dw PnP_GreatText
+	dw PnP_MyTypeText
+	dw PnP_CoolText
+	dw PnP_InspiringText
+	dw PnP_WeirdText
+	dw PnP_RightForMeText
+	dw PnP_OddText
 
-PnP_cute:
-	; is cute.
-	text_far _PnP_cute
-	db "@"
+PnP_CuteText:
+	text_far _PnP_CuteText
+	text_end
 
-PnP_lazy:
-	; is sort of lazy.
-	text_far _PnP_lazy
-	db "@"
+PnP_LazyText:
+	text_far _PnP_LazyText
+	text_end
 
-PnP_happy:
-	; is always happy.
-	text_far _PnP_happy
-	db "@"
+PnP_HappyText:
+	text_far _PnP_HappyText
+	text_end
 
-PnP_noisy:
-	; is quite noisy.
-	text_far _PnP_noisy
-	db "@"
+PnP_NoisyText:
+	text_far _PnP_NoisyText
+	text_end
 
-PnP_precocious:
-	; is precocious.
-	text_far _PnP_precocious
-	db "@"
+PnP_PrecociousText:
+	text_far _PnP_PrecociousText
+	text_end
 
-PnP_bold:
-	; is somewhat bold.
-	text_far _PnP_bold
-	db "@"
+PnP_BoldText:
+	text_far _PnP_BoldText
+	text_end
 
-PnP_picky:
-	; is too picky!
-	text_far _PnP_picky
-	db "@"
+PnP_PickyText:
+	text_far _PnP_PickyText
+	text_end
 
-PnP_sortofok:
-	; is sort of OK.
-	text_far _PnP_sortofok
-	db "@"
+PnP_SortOfOKText:
+	text_far _PnP_SortOfOKText
+	text_end
 
-PnP_soso:
-	; is just so-so.
-	text_far _PnP_soso
-	db "@"
+PnP_SoSoText:
+	text_far _PnP_SoSoText
+	text_end
 
-PnP_great:
-	; is actually great.
-	text_far _PnP_great
-	db "@"
+PnP_GreatText:
+	text_far _PnP_GreatText
+	text_end
 
-PnP_mytype:
-	; is just my type.
-	text_far _PnP_mytype
-	db "@"
+PnP_MyTypeText:
+	text_far _PnP_MyTypeText
+	text_end
 
-PnP_cool:
-	; is so cool, no?
-	text_far _PnP_cool
-	db "@"
+PnP_CoolText:
+	text_far _PnP_CoolText
+	text_end
 
-PnP_inspiring:
-	; is inspiring!
-	text_far _PnP_inspiring
-	db "@"
+PnP_InspiringText:
+	text_far _PnP_InspiringText
+	text_end
 
-PnP_weird:
-	; is kind of weird.
-	text_far _PnP_weird
-	db "@"
+PnP_WeirdText:
+	text_far _PnP_WeirdText
+	text_end
 
-PnP_rightforme:
-	; is right for me?
-	text_far _PnP_rightforme
-	db "@"
+PnP_RightForMeText:
+	text_far _PnP_RightForMeText
+	text_end
 
-PnP_odd:
-	; is definitely odd!
-	text_far _PnP_odd
-	db "@"
+PnP_OddText:
+	text_far _PnP_OddText
+	text_end
 
 PeoplePlaces6: ; Places
 	call Random
-	cp (PnP_HiddenPlaces.End - PnP_HiddenPlaces) / 2
+	cp (PnP_Places.End - PnP_Places) / 2
 	jr nc, PeoplePlaces6
-	ld hl, PnP_HiddenPlaces
+	ld hl, PnP_Places
 	ld c, a
 	ld b, 0
 	add hl, bc
@@ -1346,12 +1262,11 @@ PeoplePlaces6: ; Places
 	ld a, PLACES_AND_PEOPLE_7
 	jp NextRadioLine
 
-INCLUDE "data/radio/pnp_hidden_places.asm"
+INCLUDE "data/radio/pnp_places.asm"
 
 PnP_Text5:
-	; @ @
 	text_far _PnP_Text5
-	db "@"
+	text_end
 
 PeoplePlaces7:
 	; 0-15 are all valid indexes into .Adjectives,
@@ -1381,22 +1296,22 @@ PeoplePlaces7:
 
 .Adjectives:
 ; there are NUM_PNP_PLACES_ADJECTIVES entries
-	dw PnP_cute
-	dw PnP_lazy
-	dw PnP_happy
-	dw PnP_noisy
-	dw PnP_precocious
-	dw PnP_bold
-	dw PnP_picky
-	dw PnP_sortofok
-	dw PnP_soso
-	dw PnP_great
-	dw PnP_mytype
-	dw PnP_cool
-	dw PnP_inspiring
-	dw PnP_weird
-	dw PnP_rightforme
-	dw PnP_odd
+	dw PnP_CuteText
+	dw PnP_LazyText
+	dw PnP_HappyText
+	dw PnP_NoisyText
+	dw PnP_PrecociousText
+	dw PnP_BoldText
+	dw PnP_PickyText
+	dw PnP_SortOfOKText
+	dw PnP_SoSoText
+	dw PnP_GreatText
+	dw PnP_MyTypeText
+	dw PnP_CoolText
+	dw PnP_InspiringText
+	dw PnP_WeirdText
+	dw PnP_RightForMeText
+	dw PnP_OddText
 
 RocketRadio1:
 	call StartRadioStation
@@ -1450,54 +1365,44 @@ RocketRadio10:
 	jp NextRadioLine
 
 RocketRadioText1:
-	; … …Ahem, we are
 	text_far _RocketRadioText1
-	db "@"
+	text_end
 
 RocketRadioText2:
-	; TEAM ROCKET!
 	text_far _RocketRadioText2
-	db "@"
+	text_end
 
 RocketRadioText3:
-	; After three years
 	text_far _RocketRadioText3
-	db "@"
+	text_end
 
 RocketRadioText4:
-	; of preparation, we
 	text_far _RocketRadioText4
-	db "@"
+	text_end
 
 RocketRadioText5:
-	; have risen again
 	text_far _RocketRadioText5
-	db "@"
+	text_end
 
 RocketRadioText6:
-	; from the ashes!
 	text_far _RocketRadioText6
-	db "@"
+	text_end
 
 RocketRadioText7:
-	; GIOVANNI! @ Can you
 	text_far _RocketRadioText7
-	db "@"
+	text_end
 
 RocketRadioText8:
-	; hear?@  We did it!
 	text_far _RocketRadioText8
-	db "@"
+	text_end
 
 RocketRadioText9:
-	; @ Where is our boss?
 	text_far _RocketRadioText9
-	db "@"
+	text_end
 
 RocketRadioText10:
-	; @ Is he listening?
 	text_far _RocketRadioText10
-	db "@"
+	text_end
 
 PokeFluteRadio:
 	call StartRadioStation
@@ -1807,94 +1712,76 @@ BuenasPasswordChannelName:
 	db "BUENA'S PASSWORD@"
 
 BuenaRadioText1:
-	; BUENA: BUENA here!
 	text_far _BuenaRadioText1
-	db "@"
+	text_end
 
 BuenaRadioText2:
-	; Today's password!
 	text_far _BuenaRadioText2
-	db "@"
+	text_end
 
 BuenaRadioText3:
-	; Let me think… It's
 	text_far _BuenaRadioText3
-	db "@"
+	text_end
 
 BuenaRadioText4:
-	; @ !
 	text_far _BuenaRadioText4
-	db "@"
+	text_end
 
 BuenaRadioText5:
-	; Don't forget it!
 	text_far _BuenaRadioText5
-	db "@"
+	text_end
 
 BuenaRadioText6:
-	; I'm in GOLDENROD's
 	text_far _BuenaRadioText6
-	db "@"
+	text_end
 
 BuenaRadioText7:
-	; RADIO TOWER!
 	text_far _BuenaRadioText7
-	db "@"
+	text_end
 
 BuenaRadioMidnightText1:
-	; BUENA: Oh my…
 	text_far _BuenaRadioMidnightText1
-	db "@"
+	text_end
 
 BuenaRadioMidnightText2:
-	; It's midnight! I
 	text_far _BuenaRadioMidnightText2
-	db "@"
+	text_end
 
 BuenaRadioMidnightText3:
-	; have to shut down!
 	text_far _BuenaRadioMidnightText3
-	db "@"
+	text_end
 
 BuenaRadioMidnightText4:
-	; Thanks for tuning
 	text_far _BuenaRadioMidnightText4
-	db "@"
+	text_end
 
 BuenaRadioMidnightText5:
-	; in to the end! But
 	text_far _BuenaRadioMidnightText5
-	db "@"
+	text_end
 
 BuenaRadioMidnightText6:
-	; don't stay up too
 	text_far _BuenaRadioMidnightText6
-	db "@"
+	text_end
 
 BuenaRadioMidnightText7:
-	; late! Presented to
 	text_far _BuenaRadioMidnightText7
-	db "@"
+	text_end
 
 BuenaRadioMidnightText8:
-	; you by DJ BUENA!
 	text_far _BuenaRadioMidnightText8
-	db "@"
+	text_end
 
 BuenaRadioMidnightText9:
-	; I'm outta here!
 	text_far _BuenaRadioMidnightText9
-	db "@"
+	text_end
 
 BuenaRadioMidnightText10:
-	; …
 	text_far _BuenaRadioMidnightText10
-	db "@"
+	text_end
 
 BuenaOffTheAirText:
-	;
 	text_far _BuenaOffTheAirText
-	db "@"
+	text_end
 
 CopyRadioTextToRAM:
 	ld a, [hl]

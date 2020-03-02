@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const RUINSOFALPHKABUTOCHAMBER_RECEPTIONIST
 	const RUINSOFALPHKABUTOCHAMBER_SCIENTIST
 
@@ -16,7 +16,7 @@ RuinsOfAlphKabutoChamber_MapScripts:
 	end
 
 .OpenWall:
-	priorityjump .WallOpenScript
+	prioritysjump .WallOpenScript
 	end
 
 .DummyScene:
@@ -54,7 +54,7 @@ RuinsOfAlphKabutoChamberReceptionistScript:
 
 RuinsOfAlphKabutoChamberPuzzle:
 	refreshscreen
-	writebyte UNOWNPUZZLE_KABUTO
+	setval UNOWNPUZZLE_KABUTO
 	special UnownPuzzle
 	closetext
 	iftrue .PuzzleComplete
@@ -83,23 +83,23 @@ RuinsOfAlphKabutoChamberPuzzle:
 RuinsOfAlphKabutoChamberScientistScript:
 	faceplayer
 	opentext
-	checkcode VAR_UNOWNCOUNT
+	readvar VAR_UNOWNCOUNT
 	ifequal NUM_UNOWN, .AllUnownCaught
 	checkevent EVENT_WALL_OPENED_IN_KABUTO_CHAMBER
 	iftrue .WallOpen
 	checkevent EVENT_SOLVED_KABUTO_PUZZLE
 	iffalse .PuzzleIncomplete
-	writetext UnknownText_0x589b8
-	buttonsound
+	writetext RuinsOfAlphKabutoChamberScientistTremorText
+	promptbutton
 .PuzzleIncomplete:
-	writetext UnknownText_0x588f5
+	writetext RuinsOfAlphKabutoChamberScientistCrypticText
 	waitbutton
 	closetext
 	turnobject RUINSOFALPHKABUTOCHAMBER_SCIENTIST, UP
 	end
 
 .WallOpen:
-	writetext UnknownText_0x5897c
+	writetext RuinsOfAlphKabutoChamberScientistHoleText
 	waitbutton
 	closetext
 	end
@@ -119,7 +119,7 @@ RuinsOfAlphKabutoChamberDescriptionSign:
 RuinsOfAlphKabutoChamberWallPatternLeft:
 	opentext
 	writetext RuinsOfAlphKabutoChamberWallPatternLeftText
-	writebyte UNOWNWORDS_ESCAPE
+	setval UNOWNWORDS_ESCAPE
 	special DisplayUnownWords
 	closetext
 	end
@@ -129,7 +129,7 @@ RuinsOfAlphKabutoChamberWallPatternRight:
 	iftrue .WallOpen
 	opentext
 	writetext RuinsOfAlphKabutoChamberWallPatternRightText
-	writebyte UNOWNWORDS_ESCAPE
+	setval UNOWNWORDS_ESCAPE
 	special DisplayUnownWords
 	closetext
 	end
@@ -170,7 +170,7 @@ RuinsOfAlphKabutoChamberReceptionistText:
 	line "patterns."
 	done
 
-UnknownText_0x588f5:
+RuinsOfAlphKabutoChamberScientistCrypticText:
 	text "Recently, strange,"
 	line "cryptic patterns"
 	cont "have appeared."
@@ -183,7 +183,7 @@ UnknownText_0x588f5:
 	line "look at the walls."
 	done
 
-UnknownText_0x5897c:
+RuinsOfAlphKabutoChamberScientistHoleText:
 	text "Ah! Here's another"
 	line "huge hole!"
 
@@ -191,7 +191,7 @@ UnknownText_0x5897c:
 	line "go through!"
 	done
 
-UnknownText_0x589b8:
+RuinsOfAlphKabutoChamberScientistTremorText:
 	text "That tremor was"
 	line "pretty scary!"
 

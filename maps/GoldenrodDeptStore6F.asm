@@ -1,4 +1,8 @@
-	const_def 2 ; object constants
+GOLDENRODDEPTSTORE6F_FRESH_WATER_PRICE EQU 200
+GOLDENRODDEPTSTORE6F_SODA_POP_PRICE    EQU 300
+GOLDENRODDEPTSTORE6F_LEMONADE_PRICE    EQU 350
+
+	object_const_def ; object_event constants
 	const GOLDENRODDEPTSTORE6F_LASS
 	const GOLDENRODDEPTSTORE6F_SUPER_NERD
 
@@ -22,49 +26,49 @@ GoldenrodVendingMachine:
 	end
 
 .FreshWater:
-	checkmoney YOUR_MONEY, 200
+	checkmoney YOUR_MONEY, GOLDENRODDEPTSTORE6F_FRESH_WATER_PRICE
 	ifequal HAVE_LESS, .NotEnoughMoney
 	giveitem FRESH_WATER
 	iffalse .NotEnoughSpace
-	takemoney YOUR_MONEY, 200
-	itemtotext FRESH_WATER, MEM_BUFFER_0
-	jump .VendItem
+	takemoney YOUR_MONEY, GOLDENRODDEPTSTORE6F_FRESH_WATER_PRICE
+	getitemname STRING_BUFFER_3, FRESH_WATER
+	sjump .VendItem
 
 .SodaPop:
-	checkmoney YOUR_MONEY, 300
+	checkmoney YOUR_MONEY, GOLDENRODDEPTSTORE6F_SODA_POP_PRICE
 	ifequal HAVE_LESS, .NotEnoughMoney
 	giveitem SODA_POP
 	iffalse .NotEnoughSpace
-	takemoney YOUR_MONEY, 300
-	itemtotext SODA_POP, MEM_BUFFER_0
-	jump .VendItem
+	takemoney YOUR_MONEY, GOLDENRODDEPTSTORE6F_SODA_POP_PRICE
+	getitemname STRING_BUFFER_3, SODA_POP
+	sjump .VendItem
 
 .Lemonade:
-	checkmoney YOUR_MONEY, 350
+	checkmoney YOUR_MONEY, GOLDENRODDEPTSTORE6F_LEMONADE_PRICE
 	ifequal HAVE_LESS, .NotEnoughMoney
 	giveitem LEMONADE
 	iffalse .NotEnoughSpace
-	takemoney YOUR_MONEY, 350
-	itemtotext LEMONADE, MEM_BUFFER_0
-	jump .VendItem
+	takemoney YOUR_MONEY, GOLDENRODDEPTSTORE6F_LEMONADE_PRICE
+	getitemname STRING_BUFFER_3, LEMONADE
+	sjump .VendItem
 
 .VendItem:
 	pause 10
 	playsound SFX_ENTER_DOOR
 	writetext GoldenrodClangText
-	buttonsound
+	promptbutton
 	itemnotify
-	jump .Start
+	sjump .Start
 
 .NotEnoughMoney:
 	writetext GoldenrodVendingNoMoneyText
 	waitbutton
-	jump .Start
+	sjump .Start
 
 .NotEnoughSpace:
 	writetext GoldenrodVendingNoSpaceText
 	waitbutton
-	jump .Start
+	sjump .Start
 
 .MenuHeader:
 	db MENU_BACKUP_TILES ; flags
@@ -100,7 +104,7 @@ GoldenrodVendingText:
 GoldenrodClangText:
 	text "Clang! A can of"
 	line "@"
-	text_from_ram wStringBuffer3
+	text_ram wStringBuffer3
 	text_start
 	cont "popped out!"
 	done

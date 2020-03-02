@@ -1,5 +1,5 @@
 DoMysteryGift:
-	call ClearTileMap
+	call ClearTilemap
 	call ClearSprites
 	call WaitBGMap
 	call InitMysteryGiftLayout
@@ -24,7 +24,7 @@ DoMysteryGift:
 	pop af
 	ldh [rIE], a
 	push de
-	call ClearTileMap
+	call ClearTilemap
 	call EnableLCD
 	call WaitBGMap
 	ld b, SCGB_DIPLOMA
@@ -33,7 +33,7 @@ DoMysteryGift:
 	pop de
 	hlcoord 2, 8
 	ld a, d
-	ld de, .Text_LinkCanceled ; Link has been canceled
+	ld de, .MysteryGiftCanceledText ; Link has been canceled
 	cp $10
 	jp z, .LinkCanceled
 	cp $6c
@@ -42,10 +42,10 @@ DoMysteryGift:
 	cp 3
 	jr z, .skip_checks
 	call .CheckAlreadyGotFiveGiftsToday
-	ld hl, .Text_MaxFiveGifts ; Only 5 gifts a day
+	ld hl, .MysteryGiftFiveADayText ; Only 5 gifts a day
 	jp nc, .PrintTextAndExit
 	call .CheckAlreadyGotAGiftFromThatPerson
-	ld hl, .Text_MaxOneGiftPerPerson ; Only one gift a day per person
+	ld hl, .MysteryGiftOneADayText ; Only one gift a day per person
 	jp c, .PrintTextAndExit
 .skip_checks
 	ld a, [wMysteryGiftPlayerBackupItem]
@@ -82,7 +82,7 @@ DoMysteryGift:
 	ld de, wStringBuffer1
 	ld bc, ITEM_NAME_LENGTH
 	call CopyBytes
-	ld hl, .Text_SentToHome ; sent decoration to home
+	ld hl, .MysteryGiftSentHomeText ; sent decoration to home
 	jr .PrintTextAndExit
 
 .item
@@ -95,24 +95,24 @@ DoMysteryGift:
 	ld [wNamedObjectIndexBuffer], a
 	call CloseSRAM
 	call GetItemName
-	ld hl, .Text_Sent ; sent item
+	ld hl, .MysteryGiftSentText ; sent item
 	jr .PrintTextAndExit
 
 .LinkCanceled:
-	ld hl, .Text_LinkCanceled ; Link has been canceled
+	ld hl, .MysteryGiftCanceledText ; Link has been canceled
 	jr .PrintTextAndExit
 
 .CommunicationError:
-	ld hl, .Text_CommunicationError ; Communication error
+	ld hl, .MysteryGiftCommErrorText ; Communication error
 	call PrintText
 	jp DoMysteryGift
 
 .GiftWaiting:
-	ld hl, .Text_ReceiveGiftAtCounter ; receive gift at counter
+	ld hl, .RetrieveMysteryGiftText ; receive gift at counter
 	jr .PrintTextAndExit
 
 .FriendNotReady:
-	ld hl, .Text_FriendNotReady ; friend not ready
+	ld hl, .YourFriendIsNotReadyText ; friend not ready
 
 .PrintTextAndExit:
 	call PrintText
@@ -127,37 +127,37 @@ DoMysteryGift:
 	next "cancel it."
 	db   "@"
 
-.Text_LinkCanceled:
-	text_far UnknownText_0x1c0436
-	db "@"
+.MysteryGiftCanceledText:
+	text_far _MysteryGiftCanceledText
+	text_end
 
-.Text_CommunicationError:
-	text_far UnknownText_0x1c0454
-	db "@"
+.MysteryGiftCommErrorText:
+	text_far _MysteryGiftCommErrorText
+	text_end
 
-.Text_ReceiveGiftAtCounter:
-	text_far UnknownText_0x1c046a
-	db "@"
+.RetrieveMysteryGiftText:
+	text_far _RetrieveMysteryGiftText
+	text_end
 
-.Text_FriendNotReady:
-	text_far UnknownText_0x1c048e
-	db "@"
+.YourFriendIsNotReadyText:
+	text_far _YourFriendIsNotReadyText
+	text_end
 
-.Text_MaxFiveGifts:
-	text_far UnknownText_0x1c04a7
-	db "@"
+.MysteryGiftFiveADayText:
+	text_far _MysteryGiftFiveADayText
+	text_end
 
-.Text_MaxOneGiftPerPerson:
-	text_far UnknownText_0x1c04c6
-	db "@"
+.MysteryGiftOneADayText:
+	text_far _MysteryGiftOneADayText
+	text_end
 
-.Text_Sent:
-	text_far UnknownText_0x1c04e9
-	db "@"
+.MysteryGiftSentText:
+	text_far _MysteryGiftSentText
+	text_end
 
-.Text_SentToHome:
-	text_far UnknownText_0x1c04fa
-	db "@"
+.MysteryGiftSentHomeText:
+	text_far _MysteryGiftSentHomeText
+	text_end
 
 .CheckAlreadyGotFiveGiftsToday:
 	call GetMysteryGiftBank
@@ -256,7 +256,7 @@ Function104a95:
 	jr c, .ly_loop
 	ld c, LOW(rRP)
 	ld a, $c0
-	ld [$ff00+c], a
+	ldh [c], a
 	ld b, 240 ; This might have been intended as a 4-second timeout buffer.
 	          ; However, it is reset with each frame.
 .loop3
@@ -267,14 +267,14 @@ Function104a95:
 	ld c, LOW(rRP)
 	; Delay frame
 .ly_loop2
-	ld a, [$ff00+c]
+	ldh a, [c]
 	and b
 	ld b, a
 	ldh a, [rLY]
 	cp LY_VBLANK
 	jr nc, .ly_loop2
 .ly_loop3
-	ld a, [$ff00+c]
+	ldh a, [c]
 	and b
 	ld b, a
 	ldh a, [rLY]
@@ -434,7 +434,7 @@ Function104bd0:
 	xor a
 	ldh [rIF], a
 	ldh a, [rIE]
-	or $1
+	or 1 << VBLANK
 	ldh [rIE], a
 	ei
 	call DelayFrame
@@ -559,7 +559,7 @@ Function104d1c:
 	xor a
 	ldh [rIF], a
 	ldh a, [rIE]
-	or $1
+	or 1 << VBLANK
 	ldh [rIE], a
 	ei
 	call DelayFrame
@@ -600,7 +600,7 @@ Function104d56:
 
 Function104d5e:
 	call Function104d74
-	ld a, $4
+	ld a, 1 << TIMER
 	ldh [rIE], a
 	xor a
 	ldh [rIF], a
@@ -657,7 +657,7 @@ Function104da9:
 	xor a
 	ldh [rIF], a
 	halt
-	ld a, [$ff00+c]
+	ldh a, [c]
 	bit 1, a
 	jr z, Function104da9
 	or a
@@ -669,7 +669,7 @@ Function104db7:
 	xor a
 	ldh [rIF], a
 	halt
-	ld a, [$ff00+c]
+	ldh a, [c]
 	bit 1, a
 	jr nz, Function104db7
 	or a
@@ -677,7 +677,7 @@ Function104db7:
 
 Function104dc5:
 	ld a, $c1
-	ld [$ff00+c], a
+	ldh [c], a
 .wait
 	dec d
 	ret z
@@ -688,7 +688,7 @@ Function104dc5:
 
 Function104dd1:
 	ld a, $c0
-	ld [$ff00+c], a
+	ldh [c], a
 .wait
 	dec d
 	ret z
@@ -716,7 +716,7 @@ Function104ddd:
 .next
 	bit 0, a
 	jr nz, Function104e3a
-	ld a, [$ff00+c]
+	ldh a, [c]
 	and b
 	jr nz, .loop
 
@@ -997,14 +997,14 @@ Function104faf:
 .asm_104fdb
 	inc d
 	jr z, .asm_104fe5
-	ld a, [$ff00+c]
+	ldh a, [c]
 	bit 1, a
 	jr z, .asm_104fdb
 	ld d, $0
 .asm_104fe5
 	inc d
 	jr z, .asm_104fed
-	ld a, [$ff00+c]
+	ldh a, [c]
 	bit 1, a
 	jr nz, .asm_104fe5
 .asm_104fed
@@ -1261,7 +1261,7 @@ InitMysteryGiftLayout:
 	ld hl, MysteryGiftGFX
 	ld de, vTiles2 tile $00
 	ld a, BANK(MysteryGiftGFX)
-	ld bc, MysteryGiftGFX.End - MysteryGiftGFX
+	ld bc, $43 tiles
 	call FarCopyBytes
 	hlcoord 0, 0
 	ld a, $42
@@ -1347,11 +1347,11 @@ InitMysteryGiftLayout:
 	ret
 
 .Load5GFX:
-	ld b,  5
+	ld b, 5
 	jr .gfx_loop
 
 .Unreferenced_Load6GFX:
-	ld b,  6
+	ld b, 6
 	jr .gfx_loop
 
 .Load16GFX:
@@ -1365,7 +1365,7 @@ InitMysteryGiftLayout:
 	ret
 
 .Load9Column:
-	ld b,  9
+	ld b, 9
 	jr .col_loop
 
 .Load11Column:
@@ -1393,10 +1393,9 @@ InitMysteryGiftLayout:
 
 MysteryGiftGFX:
 INCBIN "gfx/mystery_gift/mystery_gift.2bpp"
-.End
 
 Function105688:
-	call ClearTileMap
+	call ClearTilemap
 	call ClearSprites
 	call WaitBGMap
 	call Function1057d7
@@ -1425,15 +1424,15 @@ Function105688:
 	ld c, 60
 	call DelayFrames
 	call Function105777
-	ld hl, Text_ReceivedCard
+	ld hl, MysteryGiftReceivedCardText
 	call PrintText
 	ld de, wMysteryGiftTrainerData
 	farcall Function8ac70
 	ld a, c
 	ld [wDeciramBuffer], a
-	ld hl, Text_CardNotRegistered
+	ld hl, MysteryGiftNotRegisteredCardText
 	jr c, PrintTextAndExit_JP
-	ld hl, Text_ListedCardAsNumber
+	ld hl, MysteryGiftListedCardText
 	jr PrintTextAndExit_JP
 
 Function1056eb:
@@ -1467,12 +1466,12 @@ endr
 
 Function105712:
 	call Function105777
-	ld hl, Text_MGLinkCanceled
+	ld hl, MysteryGiftLinkCancelledText
 	jr PrintTextAndExit_JP
 
 Function10571a:
 	call Function105777
-	ld hl, Text_MGCommError
+	ld hl, MysteryGiftLinkCommErrorText
 	call PrintText
 	jp Function105688
 
@@ -1489,29 +1488,29 @@ String_PressAToLink_BToCancel_JP:
 	next "つうしん<WO>ちゅうし　します"
 	db   "@"
 
-Text_ReceivedCard:
-	text_far UnknownText_0x1c051a
-	db "@"
+MysteryGiftReceivedCardText:
+	text_far _MysteryGiftReceivedCardText
+	text_end
 
-Text_ListedCardAsNumber:
-	text_far UnknownText_0x1c0531
-	db "@"
+MysteryGiftListedCardText:
+	text_far _MysteryGiftListedCardText
+	text_end
 
-Text_CardNotRegistered:
-	text_far UnknownText_0x1c0555
-	db "@"
+MysteryGiftNotRegisteredCardText:
+	text_far _MysteryGiftNotRegisteredCardText
+	text_end
 
-Text_MGLinkCanceled:
-	text_far UnknownText_0x1c0573
-	db "@"
+MysteryGiftLinkCancelledText:
+	text_far _MysteryGiftLinkCancelledText
+	text_end
 
-Text_MGCommError:
-	text_far UnknownText_0x1c0591
-	db "@"
+MysteryGiftLinkCommErrorText:
+	text_far _MysteryGiftLinkCommErrorText
+	text_end
 
 Function105777:
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	call EnableLCD
 	call WaitBGMap
 	ld b, SCGB_DIPLOMA
@@ -1552,15 +1551,15 @@ Function10578c:
 Function1057d7:
 	call ClearBGPalettes
 	call DisableLCD
-	ld hl, MysteryGiftJP_GFX
+	ld hl, CardTradeGFX
 	ld de, vTiles2 tile $00
-	ld a, BANK(MysteryGiftJP_GFX)
-	lb bc, 4, 0
+	ld a, BANK(CardTradeGFX)
+	ld bc, $40 tiles
 	call FarCopyBytes
-	ld hl, MysteryGiftJP_GFX + $40 tiles
+	ld hl, CardTradeSpriteGFX
 	ld de, vTiles0 tile $00
-	ld a, BANK(MysteryGiftJP_GFX)
-	ld bc, $80
+	ld a, BANK(CardTradeSpriteGFX)
+	ld bc, 8 tiles
 	call FarCopyBytes
 	hlcoord 0, 0
 	ld a, $3f
@@ -1706,6 +1705,8 @@ Function1057d7:
 	dsprite  1, 1, 13, 4, $06, 0
 	dsprite  1, 1, 14, 4, $07, 0
 
-; japanese mystery gift gfx
-MysteryGiftJP_GFX:
-INCBIN "gfx/mystery_gift/mystery_gift_jp.2bpp"
+CardTradeGFX:
+INCBIN "gfx/mystery_gift/card_trade.2bpp"
+
+CardTradeSpriteGFX:
+INCBIN "gfx/mystery_gift/card_sprite.2bpp"

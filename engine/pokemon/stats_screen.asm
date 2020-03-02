@@ -37,13 +37,13 @@ StatsScreenInit_gotaddress:
 	push bc
 	push hl
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	call UpdateSprites
 	farcall StatsScreen_LoadFont
 	pop hl
 	call _hl_
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	pop bc
 
 	; restore old values
@@ -60,7 +60,7 @@ StatsScreenInit_gotaddress:
 StatsScreenMain:
 	xor a
 	ld [wJumptableIndex], a
-	; stupid interns
+; ???
 	ld [wcf64], a
 	ld a, [wcf64]
 	and %11111100
@@ -80,7 +80,7 @@ StatsScreenMain:
 StatsScreenMobile:
 	xor a
 	ld [wJumptableIndex], a
-	; stupid interns
+; ???
 	ld [wcf64], a
 	ld a, [wcf64]
 	and %11111100
@@ -129,7 +129,7 @@ StatsScreen_WaitAnim:
 .finish
 	ld hl, wcf64
 	res 5, [hl]
-	farcall HDMATransferTileMapToWRAMBank3
+	farcall HDMATransferTilemapToWRAMBank3
 	ret
 
 StatsScreen_SetJumptableIndex:
@@ -148,8 +148,8 @@ MonStatsInit:
 	ld hl, wcf64
 	res 6, [hl]
 	call ClearBGPalettes
-	call ClearTileMap
-	farcall HDMATransferTileMapToWRAMBank3
+	call ClearTilemap
+	farcall HDMATransferTilemapToWRAMBank3
 	call StatsScreen_CopyToTempMon
 	ld a, [wCurPartySpecies]
 	cp EGG
@@ -843,7 +843,7 @@ StatsScreen_PlaceFrontpic:
 	ld a, [wCurPartySpecies]
 	call IsAPokemon
 	ret c
-	call StatsScreen_LoadTextBoxSpaceGFX
+	call StatsScreen_LoadTextboxSpaceGFX
 	ld de, vTiles2 tile $00
 	predef GetAnimatedFrontpic
 	hlcoord 0, 0
@@ -919,7 +919,7 @@ StatsScreen_GetAnimationParam:
 	xor a
 	ret
 
-StatsScreen_LoadTextBoxSpaceGFX:
+StatsScreen_LoadTextboxSpaceGFX:
 	nop
 	push hl
 	push de
@@ -930,8 +930,8 @@ StatsScreen_LoadTextBoxSpaceGFX:
 	push af
 	ld a, $1
 	ldh [rVBK], a
-	ld de, TextBoxSpaceGFX
-	lb bc, BANK(TextBoxSpaceGFX), 1
+	ld de, TextboxSpaceGFX
+	lb bc, BANK(TextboxSpaceGFX), 1
 	ld hl, vTiles2 tile " "
 	call Get2bpp
 	pop af
@@ -942,9 +942,8 @@ StatsScreen_LoadTextBoxSpaceGFX:
 	pop hl
 	ret
 
-Unreferenced_4e32a:
-; A blank space tile?
-	ds 16
+Unreferenced_StatsScreenSpaceGFX:
+INCBIN "gfx/font/space.2bpp"
 
 EggStatsScreen:
 	xor a
@@ -989,7 +988,7 @@ EggStatsScreen:
 	call DelayFrame
 	hlcoord 0, 0
 	call PrepMonFrontpic
-	farcall HDMATransferTileMapToWRAMBank3
+	farcall HDMATransferTilemapToWRAMBank3
 	call StatsScreen_AnimateEgg
 
 	ld a, [wTempMonHappiness]
@@ -1042,7 +1041,7 @@ StatsScreen_AnimateEgg:
 	push de
 	ld a, $1
 	ld [wBoxAlignment], a
-	call StatsScreen_LoadTextBoxSpaceGFX
+	call StatsScreen_LoadTextboxSpaceGFX
 	ld de, vTiles2 tile $00
 	predef GetAnimatedFrontpic
 	pop de

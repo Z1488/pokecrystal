@@ -140,7 +140,7 @@ Unreferenced_Function3ed7::
 Function3eea::
 	push hl
 	push bc
-	ld de, wAttrMap - wTileMap
+	ld de, wAttrmap - wTilemap
 	add hl, de
 	inc b
 	inc b
@@ -159,13 +159,13 @@ Unreferenced_Function3efd::
 	ld c, 18
 	call .fill_attr
 	pop hl
-	call PrintTextBoxText
+	call PrintTextboxText
 	ret
 
 .fill_attr
 	push hl
 	push bc
-	ld de, wAttrMap - wTileMap
+	ld de, wAttrmap - wTilemap
 	add hl, de
 	inc b
 	inc b
@@ -174,11 +174,11 @@ Unreferenced_Function3efd::
 	call Function3f35
 	pop bc
 	pop hl
-	call TextBoxBorder
+	call TextboxBorder
 	ret
 
 Function3f20::
-	hlcoord 0, 0, wAttrMap
+	hlcoord 0, 0, wAttrmap
 	ld b,  6
 	ld c, 20
 	call Function3f35

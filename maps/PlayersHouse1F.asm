@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const PLAYERSHOUSE1F_MOM1
 	const PLAYERSHOUSE1F_MOM2
 	const PLAYERSHOUSE1F_MOM3
@@ -28,15 +28,15 @@ MeetMomRightScript:
 	checkevent EVENT_TEMPORARY_UNTIL_MAP_RELOAD_1
 	iffalse .OnRight
 	applymovement PLAYERSHOUSE1F_MOM1, MomTurnsTowardPlayerMovement
-	jump MeetMomScript
+	sjump MeetMomScript
 
 .OnRight:
 	applymovement PLAYERSHOUSE1F_MOM1, MomWalksToPlayerMovement
 MeetMomScript:
 	opentext
 	writetext ElmsLookingForYouText
-	buttonsound
-	stringtotext GearName, MEM_BUFFER_1
+	promptbutton
+	getstring STRING_BUFFER_4, PokegearName
 	scall PlayersHouse1FReceiveItemStd
 	setflag ENGINE_POKEGEAR
 	setflag ENGINE_PHONE_CARD
@@ -45,7 +45,7 @@ MeetMomScript:
 	setevent EVENT_PLAYERS_HOUSE_MOM_1
 	clearevent EVENT_PLAYERS_HOUSE_MOM_2
 	writetext MomGivesPokegearText
-	buttonsound
+	promptbutton
 	special SetDayOfWeek
 .SetDayOfWeek:
 	writetext IsItDSTText
@@ -54,7 +54,7 @@ MeetMomScript:
 	special InitialSetDSTFlag
 	yesorno
 	iffalse .SetDayOfWeek
-	jump .DayOfWeekDone
+	sjump .DayOfWeekDone
 
 .WrongDay:
 	special InitialClearDSTFlag
@@ -64,17 +64,17 @@ MeetMomScript:
 	writetext ComeHomeForDSTText
 	yesorno
 	iffalse .ExplainPhone
-	jump .KnowPhone
+	sjump .KnowPhone
 
 .KnowPhone:
 	writetext KnowTheInstructionsText
-	buttonsound
-	jump .FinishPhone
+	promptbutton
+	sjump .FinishPhone
 
 .ExplainPhone:
 	writetext DontKnowTheInstructionsText
-	buttonsound
-	jump .FinishPhone
+	promptbutton
+	sjump .FinishPhone
 
 .FinishPhone:
 	writetext InstructionsNextText
@@ -84,15 +84,15 @@ MeetMomScript:
 	iftrue .FromRight
 	checkevent EVENT_TEMPORARY_UNTIL_MAP_RELOAD_2
 	iffalse .FromLeft
-	jump .Finish
+	sjump .Finish
 
 .FromRight:
 	applymovement PLAYERSHOUSE1F_MOM1, MomTurnsBackMovement
-	jump .Finish
+	sjump .Finish
 
 .FromLeft:
 	applymovement PLAYERSHOUSE1F_MOM1, MomWalksBackMovement
-	jump .Finish
+	sjump .Finish
 
 .Finish:
 	special RestartMapMusic
@@ -101,9 +101,9 @@ MeetMomScript:
 
 MeetMomTalkedScript:
 	playmusic MUSIC_MOM
-	jump MeetMomScript
+	sjump MeetMomScript
 
-GearName:
+PokegearName:
 	db "#GEAR@"
 
 PlayersHouse1FReceiveItemStd:
@@ -162,18 +162,18 @@ NeighborScript:
 
 .MornScript:
 	writetext NeighborMornIntroText
-	buttonsound
-	jump .Main
+	promptbutton
+	sjump .Main
 
 .DayScript:
 	writetext NeighborDayIntroText
-	buttonsound
-	jump .Main
+	promptbutton
+	sjump .Main
 
 .NiteScript:
 	writetext NeighborNiteIntroText
-	buttonsound
-	jump .Main
+	promptbutton
+	sjump .Main
 
 .Main:
 	writetext NeighborText

@@ -1,13 +1,12 @@
-
 HandleNewMap:
-	call Clearwc7e8
+	call ClearUnusedMapBuffer
 	call ResetMapBufferEventFlags
 	call ResetFlashIfOutOfCave
 	call GetCurrentMapSceneID
 	call ResetBikeFlags
 	ld a, MAPCALLBACK_NEWMAP
 	call RunMapCallback
-InitCommandQueue:
+HandleContinueMap:
 	farcall ClearCmdQueue
 	ld a, MAPCALLBACK_CMDQUEUE
 	call RunMapCallback
@@ -150,7 +149,7 @@ EnterMapConnection:
 	scf
 	ret
 
-LoadWarpData:
+EnterMapWarp:
 	call .SaveDigWarp
 	call .SetSpawn
 	ld a, [wNextWarp]
@@ -176,7 +175,7 @@ LoadWarpData:
 ; MOUNT_MOON_SQUARE and TIN_TOWER_ROOF are outdoor maps within indoor maps.
 ; Dig and Escape Rope should not take you to them.
 	ld a, [wPrevMapGroup]
-	cp GROUP_MOUNT_MOON_SQUARE ; GROUP_TIN_TOWER_ROOF
+	cp GROUP_MOUNT_MOON_SQUARE ; aka GROUP_TIN_TOWER_ROOF
 	jr nz, .not_mt_moon_or_tin_tower
 	ld a, [wPrevMapNumber]
 	cp MAP_MOUNT_MOON_SQUARE
@@ -234,7 +233,7 @@ LoadMapTimeOfDay:
 	farcall UpdateTimeOfDayPal
 	call OverworldTextModeSwitch
 	call .ClearBGMap
-	call .PushAttrMap
+	call .PushAttrmap
 	ret
 
 .ClearBGMap:
@@ -265,14 +264,14 @@ LoadMapTimeOfDay:
 	call ByteFill
 	ret
 
-.PushAttrMap:
+.PushAttrmap:
 	decoord 0, 0
 	call .copy
 	ldh a, [hCGB]
 	and a
 	ret z
 
-	decoord 0, 0, wAttrMap
+	decoord 0, 0, wAttrmap
 	ld a, $1
 	ldh [rVBK], a
 .copy
@@ -296,8 +295,8 @@ LoadMapTimeOfDay:
 	ldh [rVBK], a
 	ret
 
-LoadGraphics:
-	call LoadTileset
+LoadMapGraphics:
+	call LoadMapTileset
 	call LoadTilesetGFX
 	xor a
 	ldh [hMapAnims], a
@@ -314,7 +313,7 @@ LoadMapPalettes:
 
 RefreshMapSprites:
 	call ClearSprites
-	farcall ReturnFromMapSetupScript
+	farcall InitMapNameSign
 	call GetMovementPermissions
 	farcall RefreshPlayerSprite
 	farcall CheckReplaceKrisSprite
@@ -326,7 +325,7 @@ RefreshMapSprites:
 	call SafeUpdateSprites
 .skip
 	ld a, [wPlayerSpriteSetupFlags]
-	and %00011100
+	and (1 << PLAYERSPRITESETUP_FEMALE_TO_MALE_F) | (1 << 3) | (1 << 4)
 	ld [wPlayerSpriteSetupFlags], a
 	ret
 
@@ -387,7 +386,7 @@ CheckMovingOffEdgeOfMap::
 	scf
 	ret
 
-GetCoordOfUpperLeftCorner::
+GetMapScreenCoords::
 	ld hl, wOverworldMapBlocks
 	ld a, [wXCoord]
 	bit 0, a

@@ -23,7 +23,7 @@ Function49f16:
 	hlcoord 0, 12
 	ld b, 4
 	ld c, SCREEN_HEIGHT
-	call TextBox
+	call Textbox
 	xor a
 	ld de, String_0x49fe9
 	hlcoord 1, 14
@@ -65,7 +65,7 @@ Function49f16:
 .b_button
 	pop bc
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	ld a, MUSIC_MAIN_MENU
 	ld [wMapMusic], a
 	ld de, MUSIC_MAIN_MENU
@@ -146,7 +146,7 @@ MobileMenu_InitMenuBuffers:
 	ld [hli], a
 	ld a, $20 ; w2DMenuCursorOffsets
 	ld [hli], a
-	; this is a stupid way to load $c3
+	; could have done "ld a, A_BUTTON | D_UP | D_DOWN | B_BUTTON" instead
 	ld a, A_BUTTON
 	add D_UP
 	add D_DOWN
@@ -208,7 +208,7 @@ Function4a100:
 	call ClearBGPalettes
 	call Function4a13b
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 
 asm_4a111:
 	pop bc
@@ -258,7 +258,7 @@ Function4a149:
 	hlcoord 0, 12
 	ld b, $4
 	ld c, $12
-	call TextBox
+	call Textbox
 	ld a, [wMenuCursorY]
 	dec a
 	ld hl, Strings_4a23d
@@ -271,7 +271,7 @@ Function4a149:
 	call ClearBox
 	hlcoord 1, 14
 	call PlaceString
-	farcall Mobile_OpenAndCloseMenu_HDMATransferTileMapAndAttrMap
+	farcall Mobile_OpenAndCloseMenu_HDMATransferTilemapAndAttrmap
 	call SetPalettes
 	call StaticMenuJoypad
 	ld hl, wMenuCursorY
@@ -390,7 +390,7 @@ Function4a28a:
 	hlcoord 14, 1
 	ld de, String_4a34b
 	call PlaceString
-	farcall Mobile_OpenAndCloseMenu_HDMATransferTileMapAndAttrMap
+	farcall Mobile_OpenAndCloseMenu_HDMATransferTilemapAndAttrmap
 	call Function4a118
 	call ScrollingMenuJoypad
 	push af
@@ -413,13 +413,13 @@ Function4a28a:
 
 .DeleteLoginPassword:
 	call PlaceHollowCursor
-	ld hl, UnknownText_0x4a358
+	ld hl, DeleteSavedLoginPasswordText
 	call PrintText
 	hlcoord 14, 7
 	ld b, 3
 	ld c, 4
-	call TextBox
-	farcall Mobile_OpenAndCloseMenu_HDMATransferTileMapAndAttrMap
+	call Textbox
+	farcall Mobile_OpenAndCloseMenu_HDMATransferTilemapAndAttrmap
 	ld hl, DeletePassword_YesNo_MenuHeader
 	call LoadMenuHeader
 	call VerticalMenu
@@ -435,14 +435,14 @@ Function4a28a:
 	ld bc, MOBILE_LOGIN_PASSWORD_LENGTH
 	call ByteFill
 	call CloseSRAM
-	ld hl, UnknownText_0x4a35d
+	ld hl, DeletedTheLoginPasswordText
 	call PrintText
 	call JoyWaitAorB
 .dont_delete_password
 	call ExitMenu
 .quit
 	call Call_ExitMenu
-	farcall Mobile_OpenAndCloseMenu_HDMATransferTileMapAndAttrMap
+	farcall Mobile_OpenAndCloseMenu_HDMATransferTilemapAndAttrmap
 	xor a
 	ret
 
@@ -455,15 +455,13 @@ String_4a34b:
 	next "けす"
 	next "もどる@"
 
-UnknownText_0x4a358:
-	; Delete the saved LOG-IN PASSWORD?
-	text_far UnknownText_0x1c5196
-	db "@"
+DeleteSavedLoginPasswordText:
+	text_far _DeleteSavedLoginPasswordText
+	text_end
 
-UnknownText_0x4a35d:
-	; Deleted the LOG-IN PASSWORD.
-	text_far UnknownText_0x1c51b9
-	db "@"
+DeletedTheLoginPasswordText:
+	text_far _DeletedTheLoginPasswordText
+	text_end
 
 DeletePassword_YesNo_MenuHeader:
 	db MENU_BACKUP_TILES ; flags
@@ -602,9 +600,9 @@ Function4a449:
 	ret
 
 Function4a485:
-	ld de, GFX_49c0c
+	ld de, MobileMenuGFX
 	ld hl, vTiles2 tile $00
-	lb bc, BANK(GFX_49c0c), 13
+	lb bc, BANK(MobileMenuGFX), 13
 	call Get2bpp
 	ret
 
@@ -667,7 +665,7 @@ Function4a4c4:
 	hlcoord 0, 12
 	ld b, $4
 	ld c, $12
-	call TextBox
+	call Textbox
 	xor a
 	ld hl, Strings_4a5f6
 	ld d, h
@@ -717,7 +715,7 @@ asm_4a54d:
 .asm_4a574
 	pop bc
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	jp Function49f0a
 .asm_4a57e
 	ld hl, wMenuCursorY

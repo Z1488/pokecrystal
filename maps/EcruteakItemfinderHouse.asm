@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const ECRUTEAKITEMFINDERHOUSE_COOLTRAINER_M
 	const ECRUTEAKITEMFINDERHOUSE_POKEDEX
 
@@ -16,7 +16,7 @@ EcruteakItemfinderGuy:
 	yesorno
 	iffalse .no
 	writetext EcruteakItemfinderTrueSpiritText
-	buttonsound
+	promptbutton
 	verbosegiveitem ITEMFINDER
 	setevent EVENT_GOT_ITEMFINDER
 .itemfinder:

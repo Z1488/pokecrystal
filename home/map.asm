@@ -1,8 +1,8 @@
 ; Functions dealing with rendering and interacting with maps.
 
-Clearwc7e8::
-	ld hl, wc7e8
-	ld bc, wc7e8_End - wc7e8
+ClearUnusedMapBuffer::
+	ld hl, wUnusedMapBuffer
+	ld bc, wUnusedMapBufferEnd - wUnusedMapBuffer
 	ld a, 0
 	call ByteFill
 	ret
@@ -46,8 +46,8 @@ GetCurrentMapSceneID::
 	ret
 
 GetMapSceneID::
-; Searches the scene script table for the map group and number loaded in bc, and returns the wram pointer in de.
-; If the map is not in the scene script table, returns carry.
+; Searches the scene_var table for the map group and number loaded in bc, and returns the wram pointer in de.
+; If the map is not in the scene_var table, returns carry.
 	push bc
 	ldh a, [hROMBank]
 	push af
@@ -59,7 +59,7 @@ GetMapSceneID::
 	push hl
 	ld a, [hli] ; map group, or terminator
 	cp -1
-	jr z, .end ; the current map is not in the scene script table
+	jr z, .end ; the current map is not in the scene_var table
 	cp b
 	jr nz, .next ; map group did not match
 	ld a, [hli] ; map number
@@ -69,7 +69,7 @@ GetMapSceneID::
 
 .next
 	pop hl
-	ld de, 4 ; scene_script size
+	ld de, 4 ; scene_var size
 	add hl, de
 	jr .loop
 
@@ -93,7 +93,7 @@ GetMapSceneID::
 
 OverworldTextModeSwitch::
 	call LoadMapPart
-	call FarCallSwapTextboxPalettes
+	call SwapTextboxPalettes
 	ret
 
 LoadMapPart::
@@ -102,8 +102,8 @@ LoadMapPart::
 
 	ld a, [wTilesetBlocksBank]
 	rst Bankswitch
-
 	call LoadMetatiles
+
 	ld a, "■"
 	hlcoord 0, 0
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
@@ -275,7 +275,7 @@ GetDestinationWarpNumber::
 
 .next
 	pop hl
-	ld a, 5
+	ld a, WARP_EVENT_SIZE
 	add l
 	ld l, a
 	jr nc, .okay
@@ -325,12 +325,12 @@ CopyWarpData::
 	ld l, a
 	ld a, c
 	dec a
-	ld bc, 5 ; warp size
+	ld bc, WARP_EVENT_SIZE
 	call AddNTimes
 	ld bc, 2 ; warp number
 	add hl, bc
 	ld a, [hli]
-	cp $ff
+	cp -1
 	jr nz, .skip
 	ld hl, wBackupWarpNumber
 	ld a, [hli]
@@ -369,6 +369,7 @@ CheckIndoorMap::
 	ret
 
 ; unused
+UnreferencedCheckEnvironment::
 	cp INDOOR
 	ret z
 	cp GATE
@@ -380,11 +381,11 @@ LoadMapAttributes::
 	call CopyMapPartialAndAttributes
 	call SwitchToMapScriptsBank
 	call ReadMapScripts
-	xor a ; do not skip object_events
+	xor a ; do not skip object events
 	call ReadMapEvents
 	ret
 
-LoadMapAttributes_SkipPeople::
+LoadMapAttributes_SkipObjects::
 	call CopyMapPartialAndAttributes
 	call SwitchToMapScriptsBank
 	call ReadMapScripts
@@ -487,7 +488,7 @@ GetMapConnection::
 	ret
 
 ReadMapSceneScripts::
-	ld a, [hli] ; scene script count
+	ld a, [hli] ; scene_script count
 	ld c, a
 	ld [wCurMapSceneScriptCount], a
 	ld a, l
@@ -498,7 +499,7 @@ ReadMapSceneScripts::
 	and a
 	ret z
 
-	ld bc, 4 ; scene_script size
+	ld bc, SCENE_SCRIPT_SIZE
 	call AddNTimes
 	ret
 
@@ -514,7 +515,7 @@ ReadMapCallbacks::
 	and a
 	ret z
 
-	ld bc, 3
+	ld bc, CALLBACK_SIZE
 	call AddNTimes
 	ret
 
@@ -529,7 +530,7 @@ ReadWarps::
 	ld a, c
 	and a
 	ret z
-	ld bc, 5
+	ld bc, WARP_EVENT_SIZE
 	call AddNTimes
 	ret
 
@@ -546,7 +547,7 @@ ReadCoordEvents::
 	and a
 	ret z
 
-	ld bc, 8
+	ld bc, COORD_EVENT_SIZE
 	call AddNTimes
 	ret
 
@@ -563,7 +564,7 @@ ReadBGEvents::
 	and a
 	ret z
 
-	ld bc, 5
+	ld bc, BG_EVENT_SIZE
 	call AddNTimes
 	ret
 
@@ -591,13 +592,13 @@ ReadObjectEvents::
 	jr z, .skip
 	; jr c, .skip
 
-; stupid waste of time and space
+	; could have done "inc hl" instead
 	ld bc, 1
 	add hl, bc
 ; Fill the remaining sprite IDs and y coords with 0 and -1, respectively.
 ; Bleeds into wObjectMasks due to a bug.  Uncomment the above subtraction
 ; to fix.
-	ld bc, OBJECT_LENGTH
+	ld bc, MAPOBJECT_LENGTH
 .loop
 	ld [hl],  0
 	inc hl
@@ -622,7 +623,7 @@ CopyMapObjectEvents::
 	push hl
 	ld a, $ff
 	ld [hli], a
-	ld b, MAPOBJECT_E - MAPOBJECT_SPRITE
+	ld b, OBJECT_EVENT_SIZE
 .loop2
 	ld a, [de]
 	inc de
@@ -631,7 +632,7 @@ CopyMapObjectEvents::
 	jr nz, .loop2
 
 	pop hl
-	ld bc, OBJECT_LENGTH
+	ld bc, MAPOBJECT_LENGTH
 	add hl, bc
 	pop bc
 	dec c
@@ -640,13 +641,13 @@ CopyMapObjectEvents::
 
 ClearObjectStructs::
 	ld hl, wObject1Struct
-	ld bc, OBJECT_STRUCT_LENGTH * (NUM_OBJECT_STRUCTS - 1)
+	ld bc, OBJECT_LENGTH * (NUM_OBJECT_STRUCTS - 1)
 	xor a
 	call ByteFill
 
 ; Just to make sure (this is rather pointless)
 	ld hl, wObject1Struct
-	ld de, OBJECT_STRUCT_LENGTH
+	ld de, OBJECT_LENGTH
 	ld c, NUM_OBJECT_STRUCTS - 1
 	xor a
 .loop
@@ -656,7 +657,7 @@ ClearObjectStructs::
 	jr nz, .loop
 	ret
 
-RestoreFacingAfterWarp::
+GetWarpDestCoords::
 	call GetMapScriptsBank
 	rst Bankswitch
 
@@ -664,14 +665,14 @@ RestoreFacingAfterWarp::
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	inc hl ; get to the warp coords
-	inc hl ; get to the warp coords
-	inc hl ; get to the warp coords
+rept 3 ; get to the warp coords
+	inc hl
+endr
 	ld a, [wWarpNumber]
 	dec a
 	ld c, a
 	ld b, 0
-	ld a, 5
+	ld a, WARP_EVENT_SIZE
 	call AddNTimes
 	ld a, [hli]
 	ld [wYCoord], a
@@ -679,12 +680,12 @@ RestoreFacingAfterWarp::
 	ld [wXCoord], a
 	; destination warp number
 	ld a, [hli]
-	cp $ff
+	cp -1
 	jr nz, .skip
 	call .backup
 
 .skip
-	farcall GetCoordOfUpperLeftCorner
+	farcall GetMapScreenCoords
 	ret
 
 .backup
@@ -981,7 +982,7 @@ RunMapCallback::
 	ld l, a
 	or h
 	ret z
-	ld de, 3
+	ld de, CALLBACK_SIZE
 .loop
 	ld a, [hl]
 	cp b
@@ -1025,13 +1026,13 @@ MapTextbox::
 	rst Bankswitch
 
 	push hl
-	call SpeechTextBox
+	call SpeechTextbox
 	call SafeUpdateSprites
 	ld a, 1
 	ldh [hOAMUpdate], a
 	call ApplyTilemap
 	pop hl
-	call PrintTextBoxText
+	call PrintTextboxText
 	xor a
 	ldh [hOAMUpdate], a
 
@@ -1108,21 +1109,21 @@ ObjectEvent::
 
 ObjectEventText::
 	text_far _ObjectEventText
-	db "@"
+	text_end
 
 BGEvent::
 	jumptext BGEventText
 
 BGEventText::
-	text_far UnknownText_0x1c46fc
-	db "@"
+	text_far _BGEventText
+	text_end
 
 CoordinatesEvent::
 	jumptext CoordinatesEventText
 
 CoordinatesEventText::
-	text_far UnknownText_0x1c4706
-	db "@"
+	text_far _CoordinatesEventText
+	text_end
 
 CheckObjectMask::
 	ldh a, [hMapObjectIndexBuffer]
@@ -1151,12 +1152,12 @@ UnmaskObject::
 	ld [hl], 0 ; unmasked
 	ret
 
-ScrollMapDown::
+ScrollMapUp::
 	hlcoord 0, 0
 	ld de, wBGMapBuffer
 	call BackupBGMapRow
 	ld c, 2 * SCREEN_WIDTH
-	call FarCallScrollBGMapPalettes
+	call ScrollBGMapPalettes
 	ld a, [wBGMapAnchor]
 	ld e, a
 	ld a, [wBGMapAnchor + 1]
@@ -1166,12 +1167,12 @@ ScrollMapDown::
 	ldh [hBGMapUpdate], a
 	ret
 
-ScrollMapUp::
+ScrollMapDown::
 	hlcoord 0, SCREEN_HEIGHT - 2
 	ld de, wBGMapBuffer
 	call BackupBGMapRow
 	ld c, 2 * SCREEN_WIDTH
-	call FarCallScrollBGMapPalettes
+	call ScrollBGMapPalettes
 	ld a, [wBGMapAnchor]
 	ld l, a
 	ld a, [wBGMapAnchor + 1]
@@ -1189,12 +1190,12 @@ ScrollMapUp::
 	ldh [hBGMapUpdate], a
 	ret
 
-ScrollMapRight::
+ScrollMapLeft::
 	hlcoord 0, 0
 	ld de, wBGMapBuffer
 	call BackupBGMapColumn
 	ld c, 2 * SCREEN_HEIGHT
-	call FarCallScrollBGMapPalettes
+	call ScrollBGMapPalettes
 	ld a, [wBGMapAnchor]
 	ld e, a
 	ld a, [wBGMapAnchor + 1]
@@ -1204,12 +1205,12 @@ ScrollMapRight::
 	ldh [hBGMapUpdate], a
 	ret
 
-ScrollMapLeft::
+ScrollMapRight::
 	hlcoord SCREEN_WIDTH - 2, 0
 	ld de, wBGMapBuffer
 	call BackupBGMapColumn
 	ld c, 2 * SCREEN_HEIGHT
-	call FarCallScrollBGMapPalettes
+	call ScrollBGMapPalettes
 	ld a, [wBGMapAnchor]
 	ld e, a
 	and %11100000
@@ -1261,7 +1262,7 @@ UpdateBGMapRow::
 	push de
 	call .iteration
 	pop de
-	ld a, $20
+	ld a, BG_MAP_WIDTH
 	add e
 	ld e, a
 
@@ -1295,7 +1296,7 @@ UpdateBGMapColumn::
 	ld [hli], a
 	ld a, d
 	ld [hli], a
-	ld a, $20
+	ld a, BG_MAP_WIDTH
 	add e
 	ld e, a
 	jr nc, .skip
@@ -1344,11 +1345,11 @@ LoadTilesetGFX::
 
 	ldh a, [rVBK]
 	push af
-	ld a, $1
+	ld a, BANK(vTiles5)
 	ldh [rVBK], a
 
 	ld hl, wDecompressScratch + $60 tiles
-	ld de, vTiles2
+	ld de, vTiles5
 	ld bc, $60 tiles
 	call CopyBytes
 
@@ -1437,7 +1438,7 @@ SaveScreen::
 .vertical
 	ld b, SCREEN_META_WIDTH
 	ld c, SCREEN_META_HEIGHT - 1
-	jr SaveScreen_LoadNeighbor
+	jr SaveScreen_LoadConnection
 
 .left
 	ld de, wScreenSave + 1
@@ -1449,9 +1450,9 @@ SaveScreen::
 .horizontal
 	ld b, SCREEN_META_WIDTH - 1
 	ld c, SCREEN_META_HEIGHT
-	jr SaveScreen_LoadNeighbor
+	jr SaveScreen_LoadConnection
 
-LoadNeighboringBlockData::
+LoadConnectionBlockData::
 	ld hl, wOverworldMapAnchor
 	ld a, [hli]
 	ld h, [hl]
@@ -1463,7 +1464,7 @@ LoadNeighboringBlockData::
 	ld b, SCREEN_META_WIDTH
 	ld c, SCREEN_META_HEIGHT
 
-SaveScreen_LoadNeighbor::
+SaveScreen_LoadConnection::
 .row
 	push bc
 	push hl
@@ -1480,7 +1481,6 @@ SaveScreen_LoadNeighbor::
 	ld e, a
 	jr nc, .okay
 	inc d
-
 .okay
 	pop hl
 	ldh a, [hConnectionStripLength]
@@ -1573,12 +1573,12 @@ GetMovementPermissions::
 	call .CheckHiNybble
 	ret nz
 	ld a, [wTileDown]
-	and 7
-	cp $2
+	and %111
+	cp COLL_UP_WALL & %111 ; COLL_UP_BUOY & %111
 	jr z, .ok_down
-	cp $6
+	cp COLL_UP_RIGHT_WALL & %111 ; COLL_UP_RIGHT_BUOY & %111
 	jr z, .ok_down
-	cp $7
+	cp COLL_UP_LEFT_WALL & %111 ; COLL_UP_LEFT_BUOY & %111
 	ret nz
 
 .ok_down
@@ -1591,12 +1591,12 @@ GetMovementPermissions::
 	call .CheckHiNybble
 	ret nz
 	ld a, [wTileUp]
-	and 7
-	cp $3
+	and %111
+	cp COLL_DOWN_WALL & %111 ; COLL_DOWN_BUOY & %111
 	jr z, .ok_up
-	cp $4
+	cp COLL_DOWN_RIGHT_WALL & %111 ; COLL_DOWN_RIGHT_BUOY & %111
 	jr z, .ok_up
-	cp $5
+	cp COLL_DOWN_LEFT_WALL & %111 ; COLL_DOWN_LEFT_BUOY & %111
 	ret nz
 
 .ok_up
@@ -1609,12 +1609,12 @@ GetMovementPermissions::
 	call .CheckHiNybble
 	ret nz
 	ld a, [wTileRight]
-	and 7
-	cp $1
+	and %111
+	cp COLL_LEFT_WALL & %111 ; COLL_LEFT_BUOY & %111
 	jr z, .ok_right
-	cp $5
+	cp COLL_DOWN_LEFT_WALL & %111 ; COLL_DOWN_LEFT_BUOY & %111
 	jr z, .ok_right
-	cp $7
+	cp COLL_UP_LEFT_WALL & %111 ; COLL_UP_LEFT_BUOY & %111
 	ret nz
 
 .ok_right
@@ -1627,12 +1627,12 @@ GetMovementPermissions::
 	call .CheckHiNybble
 	ret nz
 	ld a, [wTileLeft]
-	and 7
-	cp $0
+	and %111
+	cp COLL_RIGHT_WALL & %111 ; COLL_RIGHT_BUOY & %111
 	jr z, .ok_left
-	cp $4
+	cp COLL_DOWN_RIGHT_WALL & %111 ; COLL_DOWN_RIGHT_BUOY & %111
 	jr z, .ok_left
-	cp $6
+	cp COLL_UP_RIGHT_WALL & %111 ; COLL_UP_RIGHT_BUOY & %111
 	ret nz
 
 .ok_left
@@ -1645,7 +1645,7 @@ GetMovementPermissions::
 	and $f0
 	cp HI_NYBBLE_SIDE_WALLS
 	ret z
-	cp HI_NYBBLE_UNUSED_C0
+	cp HI_NYBBLE_SIDE_BUOYS
 	ret
 
 GetFacingTileCoord::
@@ -1782,7 +1782,7 @@ CheckFacingBGEvent::
 	ret
 
 CheckIfFacingTileCoordIsBGEvent::
-; Checks to see if you are facing a BG event.  If so, copies it into wEngineBuffer1 and sets carry.
+; Checks to see if you are facing a BG event.  If so, copies it into wCurBGEvent and sets carry.
 	ld hl, wCurMapBGEventsPointer
 	ld a, [hli]
 	ld h, [hl]
@@ -1799,7 +1799,7 @@ CheckIfFacingTileCoordIsBGEvent::
 
 .next
 	pop hl
-	ld a, 5 ; BG event event length
+	ld a, BG_EVENT_SIZE
 	add l
 	ld l, a
 	jr nc, .nocarry
@@ -1813,8 +1813,8 @@ CheckIfFacingTileCoordIsBGEvent::
 
 .copysign
 	pop hl
-	ld de, wCurBGEventYCoord
-	ld bc, 5 ; BG event event length
+	ld de, wCurBGEvent
+	ld bc, BG_EVENT_SIZE
 	call CopyBytes
 	scf
 	ret
@@ -1836,7 +1836,7 @@ CheckCurrentMapCoordEvents::
 	ret
 
 .CoordEventCheck:
-; Checks to see if you are standing on a coord event.  If yes, copies the event to wEngineBuffer1 and sets carry.
+; Checks to see if you are standing on a coord event.  If yes, copies the event to wCurCoordEvent and sets carry.
 	ld hl, wCurMapCoordEventsPointer
 	ld a, [hli]
 	ld h, [hl]
@@ -1871,7 +1871,7 @@ CheckCurrentMapCoordEvents::
 
 .next
 	pop hl
-	ld a, $8 ; coord event size
+	ld a, COORD_EVENT_SIZE
 	add l
 	ld l, a
 	jr nc, .nocarry
@@ -1885,8 +1885,8 @@ CheckCurrentMapCoordEvents::
 
 .copy_coord_event
 	pop hl
-	ld de, wCurCoordEventSceneID
-	ld bc, 8 ; coord event size
+	ld de, wCurCoordEvent
+	ld bc, COORD_EVENT_SIZE
 	call CopyBytes
 	scf
 	ret
@@ -1932,7 +1932,7 @@ ReturnToMapWithSpeechTextbox::
 	call ReloadTilesetAndPalettes
 	hlcoord 0, 12
 	lb bc, 4, 18
-	call TextBox
+	call Textbox
 	ld hl, wVramState
 	set 0, [hl]
 	call UpdateSprites
@@ -2259,7 +2259,7 @@ GetFishingGroup::
 	pop de
 	ret
 
-LoadTileset::
+LoadMapTileset::
 	push hl
 	push bc
 
@@ -2276,4 +2276,13 @@ LoadTileset::
 
 	pop bc
 	pop hl
+	ret
+
+InexplicablyEmptyFunction::
+; unused
+; Inexplicably empty.
+; Seen in PredefPointers.
+rept 16
+	nop
+endr
 	ret

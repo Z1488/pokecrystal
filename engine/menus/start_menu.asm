@@ -33,7 +33,7 @@ StartMenu::
 	call DrawVariableLengthMenuBox
 	call .DrawBugContestStatusBox
 	call SafeUpdateSprites
-	call _OpenAndCloseMenu_HDMATransferTileMapAndAttrMap
+	call _OpenAndCloseMenu_HDMATransferTilemapAndAttrmap
 	farcall LoadFonts_NoOAMUpdate
 	call .DrawBugContestStatus
 	call UpdateTimePals
@@ -379,7 +379,7 @@ endr
 	hlcoord 0, 13
 	ld b, 3
 	ld c, 8
-	jp TextBoxPalette
+	jp TextboxPalette
 
 .IsMenuAccountOn:
 	ld a, [wOptions2]
@@ -411,7 +411,7 @@ StartMenu_Exit:
 StartMenu_Quit:
 ; Retire from the bug catching contest.
 
-	ld hl, .EndTheContestText
+	ld hl, .StartMenuContestEndText
 	call StartMenuYesNo
 	jr c, .DontEndContest
 	ld a, BANK(BugCatchingContestReturnToGateScript)
@@ -424,9 +424,9 @@ StartMenu_Quit:
 	ld a, 0
 	ret
 
-.EndTheContestText:
-	text_far UnknownText_0x1c1a6c
-	db "@"
+.StartMenuContestEndText:
+	text_far _StartMenuContestEndText
+	text_end
 
 StartMenu_Save:
 ; Save the game.

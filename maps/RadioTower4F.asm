@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const RADIOTOWER4F_FISHER
 	const RADIOTOWER4F_TEACHER
 	const RADIOTOWER4F_GROWLITHE
@@ -29,7 +29,7 @@ RadioTower4FDJMaryScript:
 
 .ClearedRockets:
 	writetext RadioTower4FDJMaryText_ClearedRockets
-	buttonsound
+	promptbutton
 	verbosegiveitem PINK_BOW
 	iffalse .NoRoom
 	writetext RadioTower4FDJMaryText_GivePinkBow

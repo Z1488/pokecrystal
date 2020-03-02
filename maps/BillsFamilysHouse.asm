@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const BILLSFAMILYSHOUSE_BILL
 	const BILLSFAMILYSHOUSE_POKEFAN_F
 	const BILLSFAMILYSHOUSE_TWIN
@@ -17,9 +17,9 @@ BillScript:
 	yesorno
 	iffalse .Refused
 	writetext BillImCountingOnYouText
-	buttonsound
+	promptbutton
 	waitsfx
-	checkcode VAR_PARTYCOUNT
+	readvar VAR_PARTYCOUNT
 	ifequal PARTY_LENGTH, .NoRoom
 	writetext ReceivedEeveeText
 	playsound SFX_CAUGHT_MON
@@ -54,13 +54,13 @@ BillsMomScript:
 	opentext
 	checkevent EVENT_MET_BILL
 	iffalse .HaventMetBill
-	writetext BillsPopText
+	writetext BillsMomText_BeforeEcruteak
 	waitbutton
 	closetext
 	end
 
 .HaventMetBill:
-	writetext BillsMomText
+	writetext BillsMomText_AfterEcruteak
 	waitbutton
 	closetext
 	end
@@ -79,7 +79,7 @@ BillsSisterScript:
 	writetext RecordedBillsNumberText
 	playsound SFX_REGISTER_PHONE_NUMBER
 	waitsfx
-	buttonsound
+	promptbutton
 .GotBillsNumber:
 	writetext BillsSisterStorageSystemText
 	waitbutton
@@ -94,8 +94,8 @@ BillsSisterScript:
 
 .NoRoom:
 	writetext BillsSisterPhoneFullText
-	buttonsound
-	jump .Refused
+	promptbutton
+	sjump .Refused
 
 BillsHouseBookshelf1:
 	jumpstd picturebookshelf
@@ -175,7 +175,7 @@ BillPopWontWorkText:
 	line "a real headache…"
 	done
 
-BillsPopText:
+BillsMomText_BeforeEcruteak:
 	text "Oh, you collect"
 	line "#MON? My son"
 	cont "BILL is an expert."
@@ -193,7 +193,7 @@ BillsPopText:
 	line "being called…"
 	done
 
-BillsMomText:
+BillsMomText_AfterEcruteak:
 	text "My husband was"
 	line "once known as a"
 

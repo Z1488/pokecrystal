@@ -11,7 +11,7 @@
 	const BATTLEANIMSTRUCT_YCOORD
 	const BATTLEANIMSTRUCT_XOFFSET
 	const BATTLEANIMSTRUCT_YOFFSET
-	const BATTLEANIMSTRUCT_0B
+	const BATTLEANIMSTRUCT_PARAM
 	const BATTLEANIMSTRUCT_DURATION
 	const BATTLEANIMSTRUCT_FRAME
 	const BATTLEANIMSTRUCT_ANON_JT_INDEX
@@ -25,6 +25,10 @@
 	const BATTLEANIMSTRUCT_16
 	const BATTLEANIMSTRUCT_17
 BATTLEANIMSTRUCT_LENGTH EQU const_value
+NUM_ANIM_OBJECTS EQU 10 ; see wActiveAnimObjects
+
+; Start tile for battle animation graphics
+BATTLEANIM_BASE_TILE EQU 7 * 7  ; Maximum size of a pokemon picture
 
 ; BattleAnimObjects indexes (see data/battle_anims/objects.asm)
 	const_def
@@ -212,10 +216,10 @@ BATTLEANIMSTRUCT_LENGTH EQU const_value
 	const ANIM_OBJ_ROCK_SMASH
 	const ANIM_OBJ_FLOWER
 	const ANIM_OBJ_COTTON
-	const ANIM_OBJ_PLAYERFEETFOLLOW
-	const ANIM_OBJ_ENEMYFEETFOLLOW
-	const ANIM_OBJ_PLAYERHEADFOLLOW
-	const ANIM_OBJ_ENEMYHEADFOLLOW
+	const ANIM_OBJ_ENEMYFEET_1ROW
+	const ANIM_OBJ_PLAYERHEAD_1ROW
+	const ANIM_OBJ_ENEMYFEET_2ROW
+	const ANIM_OBJ_PLAYERHEAD_2ROW
 
 ; DoBattleAnimFrame arguments (see engine/battle_anims/functions.asm)
 	const_def
@@ -725,8 +729,8 @@ BATTLEANIMSTRUCT_LENGTH EQU const_value
 	const ANIM_BG_WHIRLPOOL
 	const ANIM_BG_TELEPORT
 	const ANIM_BG_NIGHT_SHADE
-	const ANIM_BG_FEET_FOLLOW
-	const ANIM_BG_HEAD_FOLLOW
+	const ANIM_BG_BATTLEROBJ_1ROW
+	const ANIM_BG_BATTLEROBJ_2ROW
 	const ANIM_BG_DOUBLE_TEAM
 	const ANIM_BG_ACID_ARMOR
 	const ANIM_BG_RAPID_FLASH
@@ -804,6 +808,8 @@ BATTLEANIMSTRUCT_LENGTH EQU const_value
 	const ANIM_GFX_ANGELS
 	const ANIM_GFX_WAVE
 	const ANIM_GFX_AEROBLAST
+	const ANIM_GFX_PLAYERHEAD
+	const ANIM_GFX_ENEMYFEET
 
 ; battle_bg_effect struct members (see macros/wram.asm)
 	const_def
@@ -811,6 +817,8 @@ BATTLEANIMSTRUCT_LENGTH EQU const_value
 	const BG_EFFECT_STRUCT_JT_INDEX
 	const BG_EFFECT_STRUCT_BATTLE_TURN
 	const BG_EFFECT_STRUCT_03
+BG_EFFECT_STRUCT_LENGTH EQU const_value
+NUM_BG_EFFECTS EQU 5 ; see wActiveBGEffects
 
 ; battle palettes
 	const_def

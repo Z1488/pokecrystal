@@ -1,3 +1,5 @@
+RANDY_OT_ID EQU 01001
+
 TryAddMonToParty:
 ; Check if to copy wild mon or generate a new one
 	; Whose is it?
@@ -130,7 +132,7 @@ rept NUM_MOVES + -1
 	ld [hli], a
 endr
 	ld [hl], a
-	ld [wBuffer1], a
+	ld [wEvolutionOldSpecies], a
 	predef FillMoves
 
 .next
@@ -1724,9 +1726,9 @@ GivePoke::
 	ld hl, wPartyMon1ID
 	ld bc, PARTYMON_STRUCT_LENGTH
 	call AddNTimes
-	ld a, HIGH(01001)
+	ld a, HIGH(RANDY_OT_ID)
 	ld [hli], a
-	ld [hl], LOW(01001)
+	ld [hl], LOW(RANDY_OT_ID)
 	pop bc
 	farcall SetGiftPartyMonCaughtData
 	jr .skip_nickname
@@ -1780,7 +1782,7 @@ GivePoke::
 	ld a, b
 	and a
 	ret z
-	ld hl, TextJump_WasSentToBillsPC
+	ld hl, WasSentToBillsPCText
 	call PrintText
 	ld a, BANK(sBoxMonNicknames)
 	call GetSRAMBank
@@ -1798,10 +1800,9 @@ GivePoke::
 	ld b, $2
 	ret
 
-TextJump_WasSentToBillsPC:
-	; was sent to BILL's PC.
-	text_far Text_WasSentToBillsPC
-	db "@"
+WasSentToBillsPCText:
+	text_far _WasSentToBillsPCText
+	text_end
 
 InitNickname:
 	push de

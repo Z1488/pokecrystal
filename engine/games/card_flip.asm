@@ -1,5 +1,5 @@
-CARDFLIP_LIGHT_OFF EQUS "\"♂\"" ; $ef
-CARDFLIP_LIGHT_ON  EQUS "\"♀\"" ; $f5
+CARDFLIP_LIGHT_OFF EQU "♂" ; $ef
+CARDFLIP_LIGHT_ON  EQU "♀" ; $f5
 
 CARDFLIP_DECK_SIZE EQU 4 * 6
 
@@ -14,7 +14,7 @@ _CardFlip:
 	ld hl, wOptions
 	set NO_TEXT_SCROLL, [hl]
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	call ClearSprites
 	ld de, MUSIC_NONE
 	call PlayMusic
@@ -41,14 +41,14 @@ _CardFlip:
 	ld bc, 1 tiles
 	call CopyBytes
 
-	call CardFlip_ShiftDigitsLeftTwoPixels
+	call CardFlip_ShiftDigitsUpOnePixel
 	call CardFlip_InitTilemap
 	call CardFlip_InitAttrPals
 	call EnableLCD
 	call WaitBGMap2
-	ld a, $e4
+	ld a, %11100100
 	call DmgToCgbBGPals
-	ld de, $e4e4
+	lb de, %11100100, %11100100
 	call DmgToCgbObjPals
 	call DelayFrame
 	xor a
@@ -102,7 +102,7 @@ _CardFlip:
 	ret
 
 .AskPlayWithThree:
-	ld hl, .PlayWithThreeCoinsText
+	ld hl, .CardFlipPlayWithThreeCoinsText
 	call CardFlip_UpdateCoinBalanceDisplay
 	call YesNoBox
 	jr c, .SaidNo
@@ -115,10 +115,9 @@ _CardFlip:
 	ld [wJumptableIndex], a
 	ret
 
-.PlayWithThreeCoinsText:
-	; Play with three coins?
-	text_far UnknownText_0x1c5793
-	db "@"
+.CardFlipPlayWithThreeCoinsText:
+	text_far _CardFlipPlayWithThreeCoinsText
+	text_end
 
 .DeductCoins:
 	ld a, [wCoins]
@@ -131,7 +130,7 @@ _CardFlip:
 	ld a, l
 	cp 3
 	jr nc, .deduct ; You have at least 3 coins.
-	ld hl, .NotEnoughCoinsText
+	ld hl, .CardFlipNotEnoughCoinsText
 	call CardFlip_UpdateCoinBalanceDisplay
 	ld a, 7
 	ld [wJumptableIndex], a
@@ -155,10 +154,9 @@ _CardFlip:
 	call .Increment
 	ret
 
-.NotEnoughCoinsText:
-	; Not enough coins…
-	text_far UnknownText_0x1c57ab
-	db "@"
+.CardFlipNotEnoughCoinsText:
+	text_far _CardFlipNotEnoughCoinsText
+	text_end
 
 .ChooseACard:
 	xor a
@@ -184,7 +182,7 @@ _CardFlip:
 	hlcoord 2, 6
 	call PlaceCardFaceDown
 	call WaitBGMap
-	ld hl, .ChooseACardText
+	ld hl, .CardFlipChooseACardText
 	call CardFlip_UpdateCoinBalanceDisplay
 	xor a
 	ld [wCardFlipWhichCard], a
@@ -232,13 +230,12 @@ _CardFlip:
 	call .Increment
 	ret
 
-.ChooseACardText:
-	; Choose a card.
-	text_far UnknownText_0x1c57be
-	db "@"
+.CardFlipChooseACardText:
+	text_far _CardFlipChooseACardText
+	text_end
 
 .PlaceYourBet:
-	ld hl, .PlaceYourBetText
+	ld hl, .CardFlipPlaceYourBetText
 	call CardFlip_UpdateCoinBalanceDisplay
 .betloop
 	call JoyTextDelay
@@ -254,10 +251,9 @@ _CardFlip:
 	call .Increment
 	ret
 
-.PlaceYourBetText:
-	; Place your bet.
-	text_far UnknownText_0x1c57ce
-	db "@"
+.CardFlipPlaceYourBetText:
+	text_far _CardFlipPlaceYourBetText
+	text_end
 
 .CheckTheCard:
 	xor a
@@ -296,7 +292,7 @@ _CardFlip:
 
 .PlayAgain:
 	call ClearSprites
-	ld hl, .PlayAgainText
+	ld hl, .CardFlipPlayAgainText
 	call CardFlip_UpdateCoinBalanceDisplay
 	call YesNoBox
 	jr nc, .Continue
@@ -313,7 +309,7 @@ _CardFlip:
 	ld a, $1
 	ldh [hBGMapMode], a
 	call CardFlip_ShuffleDeck
-	ld hl, .CardsShuffledText
+	ld hl, .CardFlipShuffledText
 	call PrintText
 	jr .LoopAround
 
@@ -325,15 +321,13 @@ _CardFlip:
 	ld [wJumptableIndex], a
 	ret
 
-.PlayAgainText:
-	; Want to play again?
-	text_far UnknownText_0x1c57df
-	db "@"
+.CardFlipPlayAgainText:
+	text_far _CardFlipPlayAgainText
+	text_end
 
-.CardsShuffledText:
-	; The cards have been shuffled.
-	text_far UnknownText_0x1c57f4
-	db "@"
+.CardFlipShuffledText:
+	text_far _CardFlipShuffledText
+	text_end
 
 .Quit:
 	ld hl, wJumptableIndex
@@ -463,7 +457,7 @@ CardFlip_DisplayCardFaceUp:
 	ret z
 
 	; Set the attributes
-	ld de, wAttrMap - wTileMap
+	ld de, wAttrmap - wTilemap
 	add hl, de
 	ld a, [wCardFlipFaceUpCard]
 	and 3
@@ -494,9 +488,9 @@ CardFlip_UpdateCoinBalanceDisplay:
 	hlcoord 0, 12
 	ld b, 4
 	ld c, SCREEN_WIDTH - 2
-	call TextBox
+	call Textbox
 	pop hl
-	call PrintTextBoxText
+	call PrintTextboxText
 	call CardFlip_PrintCoinBalance
 	ret
 
@@ -504,7 +498,7 @@ CardFlip_PrintCoinBalance:
 	hlcoord 9, 15
 	ld b, 1
 	ld c, 9
-	call TextBox
+	call Textbox
 	hlcoord 10, 16
 	ld de, .CoinStr
 	call PlaceString
@@ -530,7 +524,7 @@ CardFlip_InitTilemap:
 	call CardFlip_CopyToBox
 	hlcoord 0, 12
 	lb bc, 4, 18
-	call TextBox
+	call Textbox
 	ret
 
 CardFlip_FillGreenBox:
@@ -594,7 +588,9 @@ CardFlip_CopyOAM:
 	jr nz, .loop
 	ret
 
-CardFlip_ShiftDigitsLeftTwoPixels:
+CardFlip_ShiftDigitsUpOnePixel:
+; The top rows of digits 1-9 become the bottom rows of 0-8,
+; so this routine relies on the top rows being blank.
 	ld de, vTiles0 tile "0"
 	ld hl, vTiles0 tile "0" + 2
 	ld bc, 10 tiles - 2
@@ -1083,7 +1079,7 @@ CardFlip_CheckWinCondition:
 .Lose:
 	ld de, SFX_WRONG
 	call PlaySFX
-	ld hl, .Text_Darn
+	ld hl, .CardFlipDarnText
 	call CardFlip_UpdateCoinBalanceDisplay
 	call WaitSFX
 	ret
@@ -1091,7 +1087,7 @@ CardFlip_CheckWinCondition:
 .Payout:
 	push bc
 	push de
-	ld hl, .Text_Yeah
+	ld hl, .CardFlipYeahText
 	call CardFlip_UpdateCoinBalanceDisplay
 	pop de
 	call PlaySFX
@@ -1112,15 +1108,13 @@ CardFlip_CheckWinCondition:
 	jr nz, .loop
 	ret
 
-.Text_Yeah:
-	; Yeah!
-	text_far UnknownText_0x1c5813
-	db "@"
+.CardFlipYeahText:
+	text_far _CardFlipYeahText
+	text_end
 
-.Text_Darn:
-	; Darn…
-	text_far UnknownText_0x1c581a
-	db "@"
+.CardFlipDarnText:
+	text_far _CardFlipDarnText
+	text_end
 
 .AddCoinPlaySFX:
 	ld a, [wCoins]
@@ -1564,32 +1558,32 @@ CardFlip_InitAttrPals:
 	and a
 	ret z
 
-	hlcoord 0, 0, wAttrMap
+	hlcoord 0, 0, wAttrmap
 	ld bc, SCREEN_HEIGHT * SCREEN_WIDTH
 	xor a
 	call ByteFill
 
-	hlcoord 12, 1, wAttrMap
+	hlcoord 12, 1, wAttrmap
 	lb bc, 2, 2
 	ld a, $1
 	call CardFlip_FillBox
 
-	hlcoord 14, 1, wAttrMap
+	hlcoord 14, 1, wAttrmap
 	lb bc, 2, 2
 	ld a, $2
 	call CardFlip_FillBox
 
-	hlcoord 16, 1, wAttrMap
+	hlcoord 16, 1, wAttrmap
 	lb bc, 2, 2
 	ld a, $3
 	call CardFlip_FillBox
 
-	hlcoord 18, 1, wAttrMap
+	hlcoord 18, 1, wAttrmap
 	lb bc, 2, 2
 	ld a, $4
 	call CardFlip_FillBox
 
-	hlcoord 9, 0, wAttrMap
+	hlcoord 9, 0, wAttrmap
 	lb bc, 12, 1
 	ld a, $1
 	call CardFlip_FillBox

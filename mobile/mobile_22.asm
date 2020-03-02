@@ -123,7 +123,7 @@ Function891d3:
 Function891de:
 	call Mobile22_SetBGMapMode0
 	call ClearPalettes
-	hlcoord 0, 0, wAttrMap
+	hlcoord 0, 0, wAttrmap
 	ld a, $7
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	call ByteFill
@@ -155,7 +155,7 @@ Function8920f:
 Function89215:
 	push hl
 	push bc
-	ld bc, wAttrMap - wTileMap
+	ld bc, wAttrmap - wTilemap
 	add hl, bc
 	ld [hl], a
 	pop bc
@@ -183,7 +183,7 @@ Function8921f:
 	pop de
 	ret
 
-Mobile22_ButtonSound:
+Mobile22_PromptButton:
 	call JoyWaitAorB
 	call PlayClickSFX
 	ret
@@ -501,9 +501,9 @@ Function893e2:
 
 Function893ef:
 	ld de, vTiles0
-	ld hl, GFX_8940b
+	ld hl, EZChatCursorGFX
 	ld bc, $20
-	ld a, BANK(GFX_8940b)
+	ld a, BANK(EZChatCursorGFX)
 	call FarCopyBytes
 	ret
 
@@ -514,19 +514,19 @@ Function893fe:
 	call DelayFrame
 	ret
 
-GFX_8940b:
-INCBIN "gfx/unknown/08940b.2bpp"
+EZChatCursorGFX:
+INCBIN "gfx/mobile/ez_chat_cursor.2bpp"
 
 Function8942b:
 	ld de, vTiles0 tile $02
-	ld hl, MobileAdapterGFX + $7d tiles
+	ld hl, CardLargeSpriteGFX
 	ld bc, 8 tiles
-	ld a, BANK(MobileAdapterGFX)
+	ld a, BANK(CardLargeSpriteGFX)
 	call FarCopyBytes
 	ld de, vTiles0 tile $0a
-	ld hl, MobileAdapterGFX + $c6 tiles
+	ld hl, CardSpriteGFX
 	ld bc, 4 tiles
-	ld a, BANK(MobileAdapterGFX)
+	ld a, BANK(CardSpriteGFX)
 	call FarCopyBytes
 	ret
 
@@ -544,23 +544,23 @@ Function89448:
 	ret
 
 Function89455:
-	ld hl, MobileAdapterGFX + $7d tiles
+	ld hl, CardLargeSpriteGFX
 	ld de, vTiles2 tile $0c
-	ld bc, $49 tiles
-	ld a, BANK(MobileAdapterGFX)
+	ld bc, (8 + 65) tiles
+	ld a, BANK(CardLargeSpriteGFX) ; aka BANK(CardFolderGFX)
 	call FarCopyBytes
 	ret
 
 Function89464:
-	ld hl, MobileAdapterGFX
+	ld hl, MobileCardGFX
 	ld de, vTiles2
 	ld bc, $20 tiles
-	ld a, BANK(MobileAdapterGFX)
+	ld a, BANK(MobileCardGFX)
 	call FarCopyBytes
-	ld hl, MobileAdapterGFX + $66 tiles
+	ld hl, MobileCard2GFX
 	ld de, vTiles2 tile $20
 	ld bc, $17 tiles
-	ld a, BANK(MobileAdapterGFX)
+	ld a, BANK(MobileCard2GFX)
 	call FarCopyBytes
 	ret
 
@@ -794,7 +794,7 @@ Palette_895de:
 
 Function895e6:
 	ld a, 7
-	hlcoord 0, 0, wAttrMap
+	hlcoord 0, 0, wAttrmap
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	call ByteFill
 	ret
@@ -802,7 +802,7 @@ Function895e6:
 Function895f2:
 	push bc
 	xor a
-	hlcoord 0, 0, wAttrMap
+	hlcoord 0, 0, wAttrmap
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	call ByteFill
 	call Function89605
@@ -811,7 +811,7 @@ Function895f2:
 	ret
 
 Function89605:
-	hlcoord 19, 2, wAttrMap
+	hlcoord 19, 2, wAttrmap
 	ld a, 1
 	ld de, SCREEN_WIDTH
 	ld c, 14
@@ -828,7 +828,7 @@ Function89605:
 	jr nz, .loop
 
 .done
-	hlcoord 0, 16, wAttrMap
+	hlcoord 0, 16, wAttrmap
 	ld c, 10
 	ld a, 2
 .loop2
@@ -838,7 +838,7 @@ Function89605:
 	inc a
 	dec c
 	jr nz, .loop2
-	hlcoord 1, 11, wAttrMap
+	hlcoord 1, 11, wAttrmap
 	ld a, 4
 	ld bc, 4
 	call ByteFill
@@ -848,7 +848,7 @@ Function89605:
 	ret
 
 Function8963d:
-	hlcoord 12, 3, wAttrMap
+	hlcoord 12, 3, wAttrmap
 	ld a, 6
 	ld de, SCREEN_WIDTH
 	lb bc, 7, 7
@@ -866,7 +866,7 @@ Function8963d:
 	ret
 
 Function89655:
-	hlcoord 1, 12, wAttrMap
+	hlcoord 1, 12, wAttrmap
 	ld de, SCREEN_WIDTH
 	ld a, 5
 	ld b, 4
@@ -1164,7 +1164,7 @@ Function897d5:
 	push bc
 	call Function8934a
 	jr nc, .asm_897f3
-	hlcoord 12, 3, wAttrMap
+	hlcoord 12, 3, wAttrmap
 	xor a
 	ld de, SCREEN_WIDTH
 	lb bc, 7, 7
@@ -1193,16 +1193,16 @@ Function897d5:
 	ret
 
 Function89807:
-	ld hl, MobileAdapterGFX + $20 tiles
+	ld hl, ChrisSilhouetteGFX
 	ld a, [wPlayerGender]
 	bit PLAYERGENDER_FEMALE_F, a
 	jr z, .asm_89814
-	ld hl, MobileAdapterGFX + $43 tiles
+	ld hl, KrisSilhouetteGFX
 .asm_89814
 	call DisableLCD
 	ld de, vTiles2 tile $37
-	ld bc, $23 tiles
-	ld a, BANK(MobileAdapterGFX)
+	ld bc, (5 * 7) tiles
+	ld a, BANK(ChrisSilhouetteGFX) ; aka BANK(KrisSilhouetteGFX)
 	call FarCopyBytes
 	call EnableLCD
 	call DelayFrame
@@ -1542,7 +1542,7 @@ Function89a2e:
 	hlcoord 11, 12
 	ld b, $2
 	ld c, $6
-	call TextBox
+	call Textbox
 	hlcoord 13, 13
 	ld de, String_89a4e
 	call PlaceString
@@ -2098,7 +2098,7 @@ Function89d75:
 	push hl
 	call Mobile22_SetBGMapMode0
 	call _hl_
-	farcall Mobile_OpenAndCloseMenu_HDMATransferTileMapAndAttrMap
+	farcall Mobile_OpenAndCloseMenu_HDMATransferTilemapAndAttrmap
 	pop hl
 	jr asm_89d90
 
@@ -2256,10 +2256,10 @@ Function89e6f:
 	hlcoord 7, 4
 	call Function8a58d
 	ld a, $5
-	hlcoord 7, 4, wAttrMap
+	hlcoord 7, 4, wAttrmap
 	call Function8a5a3
 	ld a, $6
-	hlcoord 10, 4, wAttrMap
+	hlcoord 10, 4, wAttrmap
 	call Function8a5a3
 	call Function891ab
 	call SetPalettes
@@ -2291,10 +2291,10 @@ Function89eb9:
 	hlcoord 7, 4
 	call Function8a58d
 	ld a, $5
-	hlcoord 7, 4, wAttrMap
+	hlcoord 7, 4, wAttrmap
 	call Function8a5a3
 	ld a, $6
-	hlcoord 10, 4, wAttrMap
+	hlcoord 10, 4, wAttrmap
 	call Function8a5a3
 	call Function891ab
 	call SetPalettes
@@ -2471,10 +2471,10 @@ Function89fa5:
 Function89fce:
 	call Function8a5b6
 	ld a, $5
-	hlcoord 7, 4, wAttrMap
+	hlcoord 7, 4, wAttrmap
 	call Function8a5a3
 	ld a, $6
-	hlcoord 10, 4, wAttrMap
+	hlcoord 10, 4, wAttrmap
 	call Function8a5a3
 	call Function89448
 	call SetPalettes
@@ -2482,7 +2482,7 @@ Function89fce:
 	jp Function89e36
 
 Function89fed:
-	ld hl, UnknownText_0x8a102
+	ld hl, MobileCardFolderIntro1Text
 	call PrintText
 	jp Function89e36
 
@@ -2509,18 +2509,18 @@ Function89ff6:
 	call Function89a0c
 	call CloseSRAM
 	call Function891ab
-	call Mobile22_ButtonSound
+	call Mobile22_PromptButton
 	jp Function89e36
 
 Function8a03d:
-	ld hl, UnknownText_0x8a107
+	ld hl, MobileCardFolderIntro2Text
 	call Function89209
 	call PrintText
 	call Function8920f
 	jp Function89e36
 
 Function8a04c:
-	ld hl, UnknownText_0x8a10c
+	ld hl, MobileCardFolderIntro3Text
 	call PrintText
 	jp Function89e36
 
@@ -2554,11 +2554,11 @@ Function8a055:
 	hlcoord 12, 4
 	call Function8a58d
 	ld a, $5
-	hlcoord 12, 4, wAttrMap
+	hlcoord 12, 4, wAttrmap
 	call Function8a5a3
 	pop hl
 	ld a, $6
-	hlcoord 15, 4, wAttrMap
+	hlcoord 15, 4, wAttrmap
 	call Function8a5a3
 	call CGBOnly_CopyTilemapAtOnce
 	jp Function89e36
@@ -2586,7 +2586,7 @@ Function8a0a1:
 
 Function8a0c1:
 	push hl
-	ld bc, wAttrMap - wTileMap
+	ld bc, wAttrmap - wTilemap
 	add hl, bc
 	ld a, [hl]
 	pop hl
@@ -2612,7 +2612,7 @@ Function8a0c9:
 
 Function8a0de:
 	call Function8a0c9
-	ld de, wAttrMap - wTileMap
+	ld de, wAttrmap - wTilemap
 	add hl, de
 	ret
 
@@ -2621,7 +2621,7 @@ Function8a0e6:
 	jp Function89e36
 
 Function8a0ec:
-	ld hl, UnknownText_0x8a111
+	ld hl, MobileCardFolderIntro4Text
 	call PrintText
 	jp Function89e36
 
@@ -2634,25 +2634,21 @@ Function8a0f5:
 Function8a0ff:
 	jp Function89e36
 
-UnknownText_0x8a102:
-	; The CARD FOLDER stores your and your friends' CARDS. A CARD contains information like the person's name, phone number and profile.
-	text_far UnknownText_0x1c5238
-	db "@"
+MobileCardFolderIntro1Text:
+	text_far _MobileCardFolderIntro1Text
+	text_end
 
-UnknownText_0x8a107:
-	; This is your CARD. Once you've entered your phone number, you can trade CARDS with your friends.
-	text_far UnknownText_0x1c52bc
-	db "@"
+MobileCardFolderIntro2Text:
+	text_far _MobileCardFolderIntro2Text
+	text_end
 
-UnknownText_0x8a10c:
-	; If you have your friend's CARD, you can use it to make a call from a mobile phone on the 2nd floor of a #MON CENTER.
-	text_far UnknownText_0x1c531e
-	db "@"
+MobileCardFolderIntro3Text:
+	text_far _MobileCardFolderIntro3Text
+	text_end
 
-UnknownText_0x8a111:
-	; To safely store your collection of CARDS, you must set a PASSCODE for your CARD FOLDER.
-	text_far UnknownText_0x1c5394
-	db "@"
+MobileCardFolderIntro4Text:
+	text_far _MobileCardFolderIntro4Text
+	text_end
 
 Function8a116:
 	ld a, $1
@@ -2737,7 +2733,7 @@ Function8a1b0:
 	hlcoord 0, 12
 	ld b, $4
 	ld c, $12
-	call TextBox
+	call Textbox
 	hlcoord 1, 14
 	ld a, [wMenuCursorY]
 	ld de, Strings_8a1cc
@@ -2760,38 +2756,35 @@ Strings_8a1cc:
 	db   "@"
 
 Function8a20d:
-	ld hl, UnknownText_0x8a232
+	ld hl, MobileCardFolderAskDeleteText
 	call PrintText
 	ld a, $2
 	call Function89259
 	ret c
-	ld hl, UnknownText_0x8a237
+	ld hl, MobileCardFolderDeleteAreYouSureText
 	call PrintText
 	ld a, $2
 	call Function89259
 	ret c
 	xor a
 	call Function8a2fe
-	ld hl, UnknownText_0x8a23c
+	ld hl, MobileCardFolderDeletedText
 	call PrintText
 	xor a
 	and a
 	ret
 
-UnknownText_0x8a232:
-	; If the CARD FOLDER is deleted, all its CARDS and the PASSCODE will also be deleted. Beware--a deleted CARD FOLDER can't be restored. Want to delete your CARD FOLDER?
-	text_far UnknownText_0x1c53ee
-	db "@"
+MobileCardFolderAskDeleteText:
+	text_far _MobileCardFolderAskDeleteText
+	text_end
 
-UnknownText_0x8a237:
-	; Are you sure you want to delete it?
-	text_far UnknownText_0x1c5494
-	db "@"
+MobileCardFolderDeleteAreYouSureText:
+	text_far _MobileCardFolderDeleteAreYouSureText
+	text_end
 
-UnknownText_0x8a23c:
-	; The CARD FOLDER has been deleted.
-	text_far UnknownText_0x1c54b9
-	db "@"
+MobileCardFolderDeletedText:
+	text_far _MobileCardFolderDeletedText
+	text_end
 
 Function8a241:
 	call LoadStandardMenuHeader
@@ -2821,10 +2814,10 @@ Function8a262:
 	hlcoord 12, 4
 	call Function8a58d
 	ld a, $5
-	hlcoord 12, 4, wAttrMap
+	hlcoord 12, 4, wAttrmap
 	call Function8a5a3
 	ld a, $6
-	hlcoord 15, 4, wAttrMap
+	hlcoord 15, 4, wAttrmap
 	call Function8a5a3
 	xor a
 	ld [wd02e], a
@@ -2839,12 +2832,12 @@ Function8a262:
 Function8a2aa:
 	ld hl, MenuHeader_0x8a2ef
 	call LoadMenuHeader
-	ld hl, UnknownText_0x8a2f4
+	ld hl, MobileCardFolderAskOpenOldText
 	call PrintText
 	ld a, $1
 	call Function89259
 	jr nc, .asm_8a2cf
-	ld hl, UnknownText_0x8a2f9
+	ld hl, MobileCardFolderAskDeleteOldText
 	call PrintText
 	ld a, $2
 	call Function89259
@@ -2873,15 +2866,13 @@ MenuHeader_0x8a2ef:
 	db MENU_BACKUP_TILES ; flags
 	menu_coords 0, 12, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1
 
-UnknownText_0x8a2f4:
-	; There is an older CARD FOLDER from a previous journey. Do you want to open it?
-	text_far UnknownText_0x1c54dd
-	db "@"
+MobileCardFolderAskOpenOldText:
+	text_far _MobileCardFolderAskOpenOldText
+	text_end
 
-UnknownText_0x8a2f9:
-	; Delete the old CARD FOLDER?
-	text_far UnknownText_0x1c552d
-	db "@"
+MobileCardFolderAskDeleteOldText:
+	text_far _MobileCardFolderAskDeleteOldText
+	text_end
 
 Function8a2fe:
 	call Function8a313
@@ -3057,7 +3048,7 @@ Function8a453:
 	hlcoord 0, 12
 	ld b, $4
 	ld c, $12
-	call TextBox
+	call Textbox
 	hlcoord 1, 14
 	ld de, String_8a476
 	ld a, [wMenuSelection]
@@ -3089,18 +3080,18 @@ Function8a4d3:
 	cp $1
 	jr nz, .asm_8a4eb
 	ld a, $5
-	hlcoord 12, 4, wAttrMap
+	hlcoord 12, 4, wAttrmap
 	call Function8a5a3
 	ld a, $7
-	hlcoord 15, 4, wAttrMap
+	hlcoord 15, 4, wAttrmap
 	call Function8a5a3
 	ret
 .asm_8a4eb
 	ld a, $7
-	hlcoord 12, 4, wAttrMap
+	hlcoord 12, 4, wAttrmap
 	call Function8a5a3
 	ld a, $6
-	hlcoord 15, 4, wAttrMap
+	hlcoord 15, 4, wAttrmap
 	call Function8a5a3
 	ret
 
@@ -3901,7 +3892,7 @@ Function8ab00:
 	hlcoord 1, 13
 	call PlaceString
 	call WaitBGMap
-	call Mobile22_ButtonSound
+	call Mobile22_PromptButton
 	and a
 	ret
 
@@ -4035,7 +4026,7 @@ Function8aba9:
 	hlcoord 0, 12
 	ld b, $4
 	ld c, $12
-	call TextBox
+	call Textbox
 	hlcoord 1, 14
 	ld de, String_8ac3b
 	call PlaceString
@@ -4140,7 +4131,7 @@ Function8ac7c:
 	ret
 
 .asm_8acf0
-	ld hl, UnknownText_0x8ad06
+	ld hl, MobileCardFolderFinishRegisteringCardsText
 	call PrintText
 	ld a, $2
 	call Function89259
@@ -4151,10 +4142,9 @@ Function8ac7c:
 	scf
 	ret
 
-UnknownText_0x8ad06:
-	; Finish registering CARDS?
-	text_far UnknownText_0x1c554a
-	db "@"
+MobileCardFolderFinishRegisteringCardsText:
+	text_far _MobileCardFolderFinishRegisteringCardsText
+	text_end
 
 Function8ad0b:
 .asm_8ad0b
@@ -4188,7 +4178,7 @@ Function8ad0b:
 	hlcoord 0, 12
 	ld b, $4
 	ld c, $12
-	call TextBox
+	call Textbox
 	ld de, String_8ad89
 	hlcoord 1, 14
 	call PlaceString
@@ -4199,7 +4189,7 @@ Function8ad0b:
 	hlcoord 0, 12
 	ld b, $4
 	ld c, $12
-	call TextBox
+	call Textbox
 	ld de, String_8ad9c
 	hlcoord 1, 14
 	call PlaceString

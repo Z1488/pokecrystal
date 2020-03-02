@@ -241,16 +241,16 @@ BillsPCDepositMenuHeader:
 
 Unreferenced_BillsPCClearThreeBoxes:
 	hlcoord 0, 0
-	ld b,  4
-	ld c,  8
+	ld b, 4
+	ld c, 8
 	call ClearBox
 	hlcoord 0, 4
 	ld b, 10
-	ld c,  9
+	ld c, 9
 	call ClearBox
 	hlcoord 0, 14
-	ld b,  2
-	ld c,  8
+	ld b, 2
+	ld c, 8
 	call ClearBox
 	ret
 
@@ -774,10 +774,10 @@ _MovePKMNWithoutMail:
 BillsPC_InitRAM:
 	call ClearBGPalettes
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	call BillsPC_InitGFX
-	ld hl, wBillsPCPokemonList
-	ld bc, $338
+	ld hl, wBillsPCData
+	ld bc, wBillsPCDataEnd - wBillsPCData
 	xor a
 	call ByteFill
 	xor a
@@ -963,7 +963,7 @@ BillsPC_PlaceString:
 	push de
 	hlcoord 0, 15
 	lb bc, 1, 18
-	call TextBox
+	call Textbox
 	pop de
 	hlcoord 1, 16
 	call PlaceString
@@ -980,7 +980,7 @@ BillsPC_MoveMonWOMail_BoxNameAndArrows:
 BillsPC_BoxName:
 	hlcoord 8, 0
 	lb bc, 1, 10
-	call TextBox
+	call Textbox
 
 	ld a, [wBillsPC_LoadedBox]
 	and a
@@ -1219,7 +1219,7 @@ BillsPC_LoadMonStats:
 BillsPC_RefreshTextboxes:
 	hlcoord 8, 2
 	lb bc, 10, 10
-	call TextBox
+	call Textbox
 
 	hlcoord 8, 2
 	ld [hl], "└"
@@ -1790,7 +1790,7 @@ DepositPokemon:
 	call ClearBox
 	hlcoord 0, 15
 	lb bc, 1, 18
-	call TextBox
+	call Textbox
 	call WaitBGMap
 	hlcoord 1, 16
 	ld de, PCString_Stored
@@ -1845,7 +1845,7 @@ TryWithdrawPokemon:
 	call ClearBox
 	hlcoord 0, 15
 	lb bc, 1, 18
-	call TextBox
+	call Textbox
 	call WaitBGMap
 	hlcoord 1, 16
 	ld de, PCString_Got
@@ -1854,7 +1854,7 @@ TryWithdrawPokemon:
 	ld h, b
 	ld de, wStringBuffer1
 	call PlaceString
-	ld a, $e7
+	ld a, "!"
 	ld [bc], a
 	ld c, 50
 	call DelayFrames
@@ -1881,7 +1881,7 @@ ReleasePKMN_ByePKMN:
 	call ClearBox
 	hlcoord 0, 15
 	lb bc, 1, 18
-	call TextBox
+	call Textbox
 
 	call WaitBGMap
 	ld a, [wCurPartySpecies]
@@ -1902,7 +1902,7 @@ ReleasePKMN_ByePKMN:
 	call DelayFrames
 	hlcoord 0, 15
 	lb bc, 1, 18
-	call TextBox
+	call Textbox
 	hlcoord 1, 16
 	ld de, PCString_Bye
 	call PlaceString
@@ -1913,7 +1913,7 @@ ReleasePKMN_ByePKMN:
 	call PlaceString
 	ld l, c
 	ld h, b
-	ld [hl], $e7
+	ld [hl], "!"
 	ld c, 50
 	call DelayFrames
 	ret
@@ -1925,7 +1925,7 @@ MovePKMNWitoutMail_InsertMon:
 	push af
 	hlcoord 0, 15
 	lb bc, 1, 18
-	call TextBox
+	call Textbox
 	hlcoord 1, 16
 	ld de, .Saving_LeaveOn
 	call PlaceString
@@ -2241,7 +2241,7 @@ _ChangeBox:
 	ld [wMenuScrollPosition], a
 	hlcoord 0, 4
 	lb bc, 8, 9
-	call TextBox
+	call Textbox
 	call ScrollingMenu
 	ld a, [wMenuJoypad]
 	cp B_BUTTON
@@ -2269,9 +2269,9 @@ _ChangeBox_MenuHeader:
 	db 1 ; default option
 
 .MenuData
-	db MENU_UNUSED_1 | MENU_UNUSED_3 ; flags
-	db 4, 0
-	db 1
+	db SCROLLINGMENU_CALL_FUNCTION3_NO_SWITCH | SCROLLINGMENU_ENABLE_FUNCTION3 ; flags
+	db 4, 0 ; rows, columns
+	db SCROLLINGMENU_ITEMS_NORMAL ; item format
 	dba .boxes
 	dba .boxnames
 	dba NULL
@@ -2306,7 +2306,7 @@ GetBoxName:
 BillsPC_PrintBoxCountAndCapacity:
 	hlcoord 11, 7
 	lb bc, 5, 7
-	call TextBox
+	call Textbox
 	ld a, [wMenuSelection]
 	cp -1
 	ret z
@@ -2394,7 +2394,7 @@ BillsPC_PrintBoxName:
 	hlcoord 0, 0
 	ld b, 2
 	ld c, 18
-	call TextBox
+	call Textbox
 	hlcoord 1, 2
 	ld de, .Current
 	call PlaceString
@@ -2457,7 +2457,7 @@ BillsPC_ChangeBoxSubmenu:
 	ld b, NAME_BOX
 	ld de, wd002
 	farcall NamingScreen
-	call ClearTileMap
+	call ClearTilemap
 	call LoadStandardFont
 	call LoadFontsBattleExtra
 	ld a, [wMenuSelection]
@@ -2522,7 +2522,7 @@ BillsPC_PlaceChangeBoxString:
 	push de
 	hlcoord 0, 14
 	lb bc, 2, 18
-	call TextBox
+	call Textbox
 	pop de
 	hlcoord 1, 16
 	call PlaceString

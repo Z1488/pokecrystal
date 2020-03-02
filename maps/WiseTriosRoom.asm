@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const WISETRIOSROOM_SAGE1
 	const WISETRIOSROOM_SAGE2
 	const WISETRIOSROOM_SAGE3
@@ -96,7 +96,7 @@ TrainerSageKoji:
 	showemote EMOTE_SHOCK, WISETRIOSROOM_SAGE6, 20
 	opentext
 	writetext SageKojiAfterBattleQuestionText
-	buttonsound
+	promptbutton
 	writetext SageKojiAfterBattleSpeechText
 	waitbutton
 	closetext

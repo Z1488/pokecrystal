@@ -1,10 +1,10 @@
 SaveMenu:
 	call LoadStandardMenuHeader
 	farcall DisplaySaveInfoOnSave
-	call SpeechTextBox
+	call SpeechTextbox
 	call UpdateSprites
 	farcall SaveMenu_CopyTilemapAtOnce
-	ld hl, Text_WouldYouLikeToSaveTheGame
+	ld hl, WouldYouLikeToSaveTheGameText
 	call SaveTheGame_yesorno
 	jr nz, .refused
 	call AskOverwriteSaveFile
@@ -38,8 +38,8 @@ SaveAfterLinkTrade:
 
 ChangeBoxSaveGame:
 	push de
-	ld hl, Text_SaveOnBoxSwitch
-	call MenuTextBox
+	ld hl, ChangeBoxSaveText
+	call MenuTextbox
 	call YesNoBox
 	call ExitMenu
 	jr c, .refused
@@ -115,8 +115,8 @@ MoveMonWOMail_InsertMon_SaveGame:
 	ret
 
 StartMoveMonWOMail_SaveGame:
-	ld hl, Text_SaveOnMoveMonWOMail
-	call MenuTextBox
+	ld hl, MoveMonWOMailSaveText
+	call MenuTextbox
 	call YesNoBox
 	call ExitMenu
 	jr c, .refused
@@ -173,13 +173,13 @@ AskOverwriteSaveFile:
 	jr z, .erase
 	call CompareLoadedAndSavedPlayerID
 	jr z, .yoursavefile
-	ld hl, Text_AnotherSaveFile
+	ld hl, AnotherSaveFileText
 	call SaveTheGame_yesorno
 	jr nz, .refused
 	jr .erase
 
 .yoursavefile
-	ld hl, Text_AlreadyASaveFile
+	ld hl, AlreadyASaveFileText
 	call SaveTheGame_yesorno
 	jr nz, .refused
 	jr .ok
@@ -196,9 +196,9 @@ AskOverwriteSaveFile:
 	ret
 
 SaveTheGame_yesorno:
-	ld b, BANK(Text_WouldYouLikeToSaveTheGame)
+	ld b, BANK(WouldYouLikeToSaveTheGameText)
 	call MapTextbox
-	call LoadMenuTextBox
+	call LoadMenuTextbox
 	lb bc, 0, 7
 	call PlaceYesNoBox
 	ld a, [wMenuCursorY]
@@ -239,7 +239,7 @@ SavedTheGame:
 	ld a, TEXT_DELAY_MED
 	ld [wOptions], a
 	; <PLAYER> saved the game!
-	ld hl, Text_PlayerSavedTheGame
+	ld hl, SavedTheGameText
 	call PrintText
 	; restore the original text speed setting
 	pop af
@@ -336,7 +336,7 @@ SavingDontTurnOffThePower:
 	ld a, TEXT_DELAY_MED
 	ld [wOptions], a
 	; SAVING... DON'T TURN OFF THE POWER.
-	ld hl, Text_SavingDontTurnOffThePower
+	ld hl, SavingDontTurnOffThePowerText
 	call PrintText
 	; Restore the text speed setting
 	pop af
@@ -391,11 +391,10 @@ EraseHallOfFame:
 	jp CloseSRAM
 
 Unreferenced_Function14d18:
-; copy .Data to SRA4:a007
-	ld a, 4 ; MBC30 bank used by JP Crystal; inaccessible by MBC3
+	ld a, BANK(s4_a007)
 	call GetSRAMBank
 	ld hl, .Data
-	ld de, $a007 ; address of MBC30 bank
+	ld de, s4_a007
 	ld bc, .DataEnd - .Data
 	call CopyBytes
 	jp CloseSRAM
@@ -462,7 +461,7 @@ HallOfFame_InitSaveIfNeeded:
 	ret
 
 ValidateSave:
-	ld a, BANK(sCheckValue1) ; BANK(sCheckValue2)
+	ld a, BANK(sCheckValue1) ; aka BANK(sCheckValue2)
 	call GetSRAMBank
 	ld a, SAVE_CHECK_VALUE_1
 	ld [sCheckValue1], a
@@ -524,7 +523,7 @@ SaveChecksum:
 	ret
 
 ValidateBackupSave:
-	ld a, BANK(sBackupCheckValue1) ; BANK(sBackupCheckValue2)
+	ld a, BANK(sBackupCheckValue1) ; aka BANK(sBackupCheckValue2)
 	call GetSRAMBank
 	ld a, SAVE_CHECK_VALUE_1
 	ld [sBackupCheckValue1], a
@@ -619,7 +618,7 @@ TryLoadSaveFile:
 	push af
 	set NO_TEXT_SCROLL, a
 	ld [wOptions], a
-	ld hl, Text_SaveFileCorrupted
+	ld hl, SaveFileCorruptedText
 	call PrintText
 	pop af
 	ld [wOptions], a
@@ -671,13 +670,13 @@ TryLoadSaveData:
 	ld de, wOptions
 	ld bc, wOptionsEnd - wOptions
 	call CopyBytes
-	call PanicResetClock
+	call ClearClock
 	ret
 
 INCLUDE "data/default_options.asm"
 
 CheckPrimarySaveFile:
-	ld a, BANK(sCheckValue1) ; BANK(sCheckValue2)
+	ld a, BANK(sCheckValue1) ; aka BANK(sCheckValue2)
 	call GetSRAMBank
 	ld a, [sCheckValue1]
 	cp SAVE_CHECK_VALUE_1
@@ -698,7 +697,7 @@ CheckPrimarySaveFile:
 	ret
 
 CheckBackupSaveFile:
-	ld a, BANK(sBackupCheckValue1) ; BANK(sBackupCheckValue2)
+	ld a, BANK(sBackupCheckValue1) ; aka BANK(sBackupCheckValue2)
 	call GetSRAMBank
 	ld a, [sBackupCheckValue1]
 	cp SAVE_CHECK_VALUE_1
@@ -833,9 +832,9 @@ _SaveData:
 
 	ld hl, wd479
 	ld a, [hli]
-	ld [$a60e + 0], a
+	ld [s4_a60e + 0], a
 	ld a, [hli]
-	ld [$a60e + 1], a
+	ld [s4_a60e + 1], a
 
 	jp CloseSRAM
 
@@ -851,9 +850,9 @@ _LoadData:
 	; (harmlessly) writes the aforementioned wEventFlags to the unused wd479.
 
 	ld hl, wd479
-	ld a, [$a60e + 0]
+	ld a, [s4_a60e + 0]
 	ld [hli], a
-	ld a, [$a60e + 1]
+	ld a, [s4_a60e + 1]
 	ld [hli], a
 
 	jp CloseSRAM
@@ -1095,42 +1094,34 @@ Checksum:
 	jr nz, .loop
 	ret
 
-Text_WouldYouLikeToSaveTheGame:
-	; Would you like to save the game?
-	text_far UnknownText_0x1c454b
-	db "@"
+WouldYouLikeToSaveTheGameText:
+	text_far _WouldYouLikeToSaveTheGameText
+	text_end
 
-Text_SavingDontTurnOffThePower:
-	; SAVING… DON'T TURN OFF THE POWER.
-	text_far UnknownText_0x1c456d
-	db "@"
+SavingDontTurnOffThePowerText:
+	text_far _SavingDontTurnOffThePowerText
+	text_end
 
-Text_PlayerSavedTheGame:
-	; saved the game.
-	text_far UnknownText_0x1c4590
-	db "@"
+SavedTheGameText:
+	text_far _SavedTheGameText
+	text_end
 
-Text_AlreadyASaveFile:
-	; There is already a save file. Is it OK to overwrite?
-	text_far UnknownText_0x1c45a3
-	db "@"
+AlreadyASaveFileText:
+	text_far _AlreadyASaveFileText
+	text_end
 
-Text_AnotherSaveFile:
-	; There is another save file. Is it OK to overwrite?
-	text_far UnknownText_0x1c45d9
-	db "@"
+AnotherSaveFileText:
+	text_far _AnotherSaveFileText
+	text_end
 
-Text_SaveFileCorrupted:
-	; The save file is corrupted!
-	text_far UnknownText_0x1c460d
-	db "@"
+SaveFileCorruptedText:
+	text_far _SaveFileCorruptedText
+	text_end
 
-Text_SaveOnBoxSwitch:
-	; When you change a #MON BOX, data will be saved. OK?
-	text_far UnknownText_0x1c462a
-	db "@"
+ChangeBoxSaveText:
+	text_far _ChangeBoxSaveText
+	text_end
 
-Text_SaveOnMoveMonWOMail:
-	; Each time you move a #MON, data will be saved. OK?
-	text_far UnknownText_0x1c465f
-	db "@"
+MoveMonWOMailSaveText:
+	text_far _MoveMonWOMailSaveText
+	text_end

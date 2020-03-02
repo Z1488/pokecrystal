@@ -4,7 +4,7 @@ hTransferVirtualOAM:: ds 10 ; ff80
 
 hROMBankBackup:: db ; ff8a
 hBuffer:: db ; ff8b
-hFF8C:: db ; ff8c
+hSRAMBank:: db ; ff8c
 
 hRTCDayHi::   db ; ff8d
 hRTCDayLo::   db ; ff8e
@@ -160,4 +160,3 @@ hDMATransfer:: db ; ffe8
 hMobile:: db ; ffe9
 hSystemBooted:: db ; ffea
 hClockResetTrigger:: db ; ffeb
-hFFEC:: db ; ffec

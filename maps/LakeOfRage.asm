@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const LAKEOFRAGE_LANCE
 	const LAKEOFRAGE_GRAMPS
 	const LAKEOFRAGE_SUPER_NERD1
@@ -32,7 +32,7 @@ LakeOfRage_MapScripts:
 	return
 
 .Wesley:
-	checkcode VAR_WEEKDAY
+	readvar VAR_WEEKDAY
 	ifequal WEDNESDAY, .WesleyAppears
 	disappear LAKEOFRAGE_WESLEY
 	return
@@ -45,18 +45,18 @@ LakeOfRageLanceScript:
 	checkevent EVENT_REFUSED_TO_HELP_LANCE_AT_LAKE_OF_RAGE
 	iftrue .AskAgainForHelp
 	opentext
-	writetext UnknownText_0x70157
-	buttonsound
+	writetext LakeOfRageLanceForcedToEvolveText
+	promptbutton
 	faceplayer
-	writetext UnknownText_0x701b4
+	writetext LakeOfRageLanceIntroText
 	yesorno
 	iffalse .RefusedToHelp
 .AgreedToHelp:
-	writetext UnknownText_0x702c6
+	writetext LakeOfRageLanceRadioSignalText
 	waitbutton
 	closetext
 	playsound SFX_WARP_TO
-	applymovement LAKEOFRAGE_LANCE, MovementData_0x70155
+	applymovement LAKEOFRAGE_LANCE, LakeOfRageLanceTeleportIntoSkyMovement
 	disappear LAKEOFRAGE_LANCE
 	clearevent EVENT_MAHOGANY_MART_LANCE_AND_DRAGONITE
 	setevent EVENT_DECIDED_TO_HELP_LANCE
@@ -64,7 +64,7 @@ LakeOfRageLanceScript:
 	end
 
 .RefusedToHelp:
-	writetext UnknownText_0x70371
+	writetext LakeOfRageLanceRefusedText
 	waitbutton
 	closetext
 	setevent EVENT_REFUSED_TO_HELP_LANCE_AT_LAKE_OF_RAGE
@@ -73,28 +73,28 @@ LakeOfRageLanceScript:
 .AskAgainForHelp:
 	faceplayer
 	opentext
-	writetext UnknownText_0x703a5
+	writetext LakeOfRageLanceAskHelpText
 	yesorno
 	iffalse .RefusedToHelp
-	jump .AgreedToHelp
+	sjump .AgreedToHelp
 
 RedGyarados:
 	opentext
-	writetext UnknownText_0x703cb
+	writetext LakeOfRageGyaradosCryText
 	pause 15
 	cry GYARADOS
 	closetext
 	loadwildmon GYARADOS, 30
-	writecode VAR_BATTLETYPE, BATTLETYPE_SHINY
+	loadvar VAR_BATTLETYPE, BATTLETYPE_SHINY
 	startbattle
-	ifequal $1, .NotBeaten
+	ifequal LOSE, .NotBeaten
 	disappear LAKEOFRAGE_GYARADOS
 .NotBeaten:
 	reloadmapafterbattle
 	opentext
 	giveitem RED_SCALE
 	waitsfx
-	writetext UnknownText_0x703df
+	writetext LakeOfRageGotRedScaleText
 	playsound SFX_ITEM
 	waitsfx
 	itemnotify
@@ -138,7 +138,7 @@ MagikarpHouseSignScript:
 	end
 
 .MagikarpLengthRecord:
-	buttonsound
+	promptbutton
 	special MagikarpHouseSign
 	closetext
 	end
@@ -192,16 +192,16 @@ WesleyScript:
 	opentext
 	checkevent EVENT_GOT_BLACKBELT_FROM_WESLEY
 	iftrue WesleyWednesdayScript
-	checkcode VAR_WEEKDAY
+	readvar VAR_WEEKDAY
 	ifnotequal WEDNESDAY, WesleyNotWednesdayScript
 	checkevent EVENT_MET_WESLEY_OF_WEDNESDAY
 	iftrue .MetWesley
 	writetext MeetWesleyText
-	buttonsound
+	promptbutton
 	setevent EVENT_MET_WESLEY_OF_WEDNESDAY
 .MetWesley:
 	writetext WesleyGivesGiftText
-	buttonsound
+	promptbutton
 	verbosegiveitem BLACKBELT
 	iffalse WesleyDoneScript
 	setevent EVENT_GOT_BLACKBELT_FROM_WESLEY
@@ -238,11 +238,11 @@ LakeOfRageHiddenRareCandy:
 LakeOfRageHiddenMaxPotion:
 	hiddenitem MAX_POTION, EVENT_LAKE_OF_RAGE_HIDDEN_MAX_POTION
 
-MovementData_0x70155:
+LakeOfRageLanceTeleportIntoSkyMovement:
 	teleport_from
 	step_end
 
-UnknownText_0x70157:
+LakeOfRageLanceForcedToEvolveText:
 	text "This lake is full"
 	line "of GYARADOS but"
 	cont "nothing else…"
@@ -252,7 +252,7 @@ UnknownText_0x70157:
 	cont "to evolve…"
 	done
 
-UnknownText_0x701b4:
+LakeOfRageLanceIntroText:
 	text "Did you come here"
 	line "because of the"
 	cont "rumors?"
@@ -280,7 +280,7 @@ UnknownText_0x701b4:
 	cont "investigate?"
 	done
 
-UnknownText_0x702c6:
+LakeOfRageLanceRadioSignalText:
 	text "LANCE: Excellent!"
 
 	para "It seems that the"
@@ -299,22 +299,22 @@ UnknownText_0x702c6:
 	line "for you, <PLAY_G>."
 	done
 
-UnknownText_0x70371:
+LakeOfRageLanceRefusedText:
 	text "Oh… Well, if you"
 	line "change your mind,"
 	cont "please help me."
 	done
 
-UnknownText_0x703a5:
+LakeOfRageLanceAskHelpText:
 	text "LANCE: Hm? Are you"
 	line "going to help me?"
 	done
 
-UnknownText_0x703cb:
+LakeOfRageGyaradosCryText:
 	text "GYARADOS: Gyashaa!"
 	done
 
-UnknownText_0x703df:
+LakeOfRageGotRedScaleText:
 	text "<PLAYER> obtained a"
 	line "RED SCALE."
 	done

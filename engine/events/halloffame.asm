@@ -449,17 +449,17 @@ DisplayHOFMon:
 	ld bc, MON_NAME_LENGTH - 1
 	call CopyBytes
 	ld a, "@"
-	ld [wStringBuffer2 + 10], a
+	ld [wStringBuffer2 + MON_NAME_LENGTH - 1], a
 	hlcoord 0, 0
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	ld a, " "
 	call ByteFill
 	hlcoord 0, 0
 	lb bc, 3, SCREEN_WIDTH - 2
-	call TextBox
+	call Textbox
 	hlcoord 0, 12
 	lb bc, 4, SCREEN_WIDTH - 2
-	call TextBox
+	call Textbox
 	ld a, [wTempMonSpecies]
 	ld [wCurPartySpecies], a
 	ld [wDeciramBuffer], a
@@ -567,10 +567,10 @@ HOF_AnimatePlayerPic:
 	ldh [hBGMapMode], a
 	hlcoord 0, 2
 	lb bc, 8, 9
-	call TextBox
+	call Textbox
 	hlcoord 0, 12
 	lb bc, 4, 18
-	call TextBox
+	call Textbox
 	hlcoord 2, 4
 	ld de, wPlayerName
 	call PlaceString

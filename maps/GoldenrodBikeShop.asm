@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const GOLDENRODBIKESHOP_CLERK
 
 GoldenrodBikeShop_MapScripts:
@@ -18,7 +18,7 @@ GoldenrodBikeShopClerkScript:
 	yesorno
 	iffalse .Refused
 	writetext GoldenrodBikeShopClerkAgreedText
-	buttonsound
+	promptbutton
 	waitsfx
 	giveitem BICYCLE
 	writetext BorrowedABicycleText

@@ -39,10 +39,10 @@ PrintDayOfWeek:
 .Day:
 	db "DAY@"
 
-NewGame_ClearTileMapEtc:
+NewGame_ClearTilemapEtc:
 	xor a
 	ldh [hMapAnims], a
-	call ClearTileMap
+	call ClearTilemap
 	call LoadFontsExtra
 	call LoadStandardFont
 	call ClearWindowData
@@ -62,7 +62,7 @@ NewGame:
 	xor a
 	ld [wDebugFlags], a
 	call ResetWRAM
-	call NewGame_ClearTileMapEtc
+	call NewGame_ClearTilemapEtc
 	call AreYouABoyOrAreYouAGirl
 	call OakSpeech
 	call InitializeWorld
@@ -151,7 +151,7 @@ _ResetWRAM:
 	ld hl, wNumBalls
 	call .InitList
 
-	ld hl, wPCItems
+	ld hl, wNumPCItems
 	call .InitList
 
 	xor a
@@ -359,7 +359,7 @@ Continue:
 	call ClearBGPalettes
 	call Continue_MobileAdapterMenu
 	call CloseWindow
-	call ClearTileMap
+	call ClearTilemap
 	ld c, 20
 	call DelayFrames
 	farcall JumpRoamMons
@@ -627,7 +627,7 @@ Continue_DisplayGameTime:
 OakSpeech:
 	farcall InitClock
 	call RotateFourPalettesLeft
-	call ClearTileMap
+	call ClearTilemap
 
 	ld de, MUSIC_ROUTE_30
 	call PlayMusic
@@ -647,7 +647,7 @@ OakSpeech:
 	ld hl, OakText1
 	call PrintText
 	call RotateThreePalettesRight
-	call ClearTileMap
+	call ClearTilemap
 
 	ld a, WOOPER
 	ld [wCurSpecies], a
@@ -670,7 +670,7 @@ OakSpeech:
 	ld hl, OakText4
 	call PrintText
 	call RotateThreePalettesRight
-	call ClearTileMap
+	call ClearTilemap
 
 	xor a
 	ld [wCurPartySpecies], a
@@ -685,7 +685,7 @@ OakSpeech:
 	ld hl, OakText5
 	call PrintText
 	call RotateThreePalettesRight
-	call ClearTileMap
+	call ClearTilemap
 
 	xor a
 	ld [wCurPartySpecies], a
@@ -704,11 +704,11 @@ OakSpeech:
 
 OakText1:
 	text_far _OakText1
-	db "@"
+	text_end
 
 OakText2:
 	text_far _OakText2
-	start_asm
+	text_asm
 	ld a, WOOPER
 	call PlayMonCry
 	call WaitSFX
@@ -717,23 +717,23 @@ OakText2:
 
 OakText3:
 	text_far _OakText3
-	db "@"
+	text_end
 
 OakText4:
 	text_far _OakText4
-	db "@"
+	text_end
 
 OakText5:
 	text_far _OakText5
-	db "@"
+	text_end
 
 OakText6:
 	text_far _OakText6
-	db "@"
+	text_end
 
 OakText7:
 	text_far _OakText7
-	db "@"
+	text_end
 
 NamePlayer:
 	farcall MovePlayerPicRight
@@ -752,7 +752,7 @@ NamePlayer:
 	farcall NamingScreen
 
 	call RotateThreePalettesRight
-	call ClearTileMap
+	call ClearTilemap
 
 	call LoadFontsExtra
 	call WaitBGMap
@@ -848,7 +848,7 @@ ShrinkPlayer:
 	call DelayFrames
 
 	call RotateThreePalettesRight
-	call ClearTileMap
+	call ClearTilemap
 	ret
 
 Intro_RotatePalettesLeftFrontpic:
@@ -956,6 +956,8 @@ CrystalIntroSequence:
 	callfar Copyright_GFPresents
 	jr c, StartTitleScreen
 	farcall CrystalIntro
+
+	; fallthrough
 
 StartTitleScreen:
 	ldh a, [rSVBK]
@@ -1278,7 +1280,7 @@ Unreferenced_Function639b:
 	ld e, a
 	ld d, [hl]
 	ld a, SPRITE_ANIM_INDEX_GS_TITLE_TRAIL
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ret
 
 .Data63ca:
@@ -1291,7 +1293,7 @@ Unreferenced_Function639b:
 	db  0 * 8,      0 * 8, 11 * 8 + 4, 11 * 8
 
 Copyright:
-	call ClearTileMap
+	call ClearTilemap
 	call LoadFontsExtra
 	ld de, CopyrightGFX
 	ld hl, vTiles2 tile $60
@@ -1320,7 +1322,7 @@ GameInit::
 	farcall TryLoadSaveData
 	call ClearWindowData
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	ld a, HIGH(vBGMap0)
 	ldh [hBGMapAddress + 1], a
 	xor a ; LOW(vBGMap0)

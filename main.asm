@@ -61,7 +61,8 @@ INCLUDE "engine/pokemon/mon_menu.asm"
 INCLUDE "engine/overworld/select_menu.asm"
 INCLUDE "engine/events/elevator.asm"
 INCLUDE "engine/events/bug_contest/contest.asm"
-INCLUDE "engine/events/misc_scripts_2.asm"
+INCLUDE "engine/events/repel.asm"
+INCLUDE "engine/events/hidden_item.asm"
 INCLUDE "engine/events/std_collision.asm"
 INCLUDE "engine/events/bug_contest/judging.asm"
 INCLUDE "engine/events/pokerus/apply_pokerus_tick.asm"
@@ -87,7 +88,6 @@ INCLUDE "engine/events/daycare.asm"
 INCLUDE "engine/events/print_unown.asm"
 INCLUDE "engine/events/print_photo.asm"
 INCLUDE "engine/pokemon/breeding.asm"
-INCLUDE "gfx/tilesets.asm"
 
 
 SECTION "Roofs", ROMX
@@ -262,14 +262,27 @@ INCLUDE "data/pokemon/base_stats.asm"
 INCLUDE "data/pokemon/names.asm"
 INCLUDE "data/pokemon/unused_pic_banks.asm"
 
-UnknownEggPic::
+UnusedEggFrontpic::
 ; Another egg pic. This is shifted up a few pixels.
-INCBIN "gfx/unknown/unknown_egg.2bpp.lz"
+INCBIN "gfx/pokemon/egg/unused_front.2bpp.lz"
 
 
 SECTION "Crystal Phone Text", ROMX
 
-INCLUDE "data/phone/text/extra.asm"
+INCLUDE "data/phone/text/irwin_caller.asm"
+INCLUDE "data/phone/text/arnie_caller.asm"
+INCLUDE "data/phone/text/alan_caller.asm"
+INCLUDE "data/phone/text/dana_caller.asm"
+INCLUDE "data/phone/text/chad_caller.asm"
+INCLUDE "data/phone/text/derek_caller.asm"
+INCLUDE "data/phone/text/tully_caller.asm"
+INCLUDE "data/phone/text/brent_caller.asm"
+INCLUDE "data/phone/text/tiffany_caller.asm"
+INCLUDE "data/phone/text/vance_caller.asm"
+INCLUDE "data/phone/text/wilton_caller.asm"
+INCLUDE "data/phone/text/kenji_caller.asm"
+INCLUDE "data/phone/text/parry_caller.asm"
+INCLUDE "data/phone/text/erin_caller.asm"
 
 
 SECTION "bank20", ROMX
@@ -321,11 +334,20 @@ INCLUDE "engine/events/fish.asm"
 INCLUDE "engine/games/slot_machine.asm"
 
 
-SECTION "Phone Engine", ROMX
+SECTION "Phone Scripts 1", ROMX
 
-INCLUDE "engine/phone/phone_callers.asm"
-INCLUDE "engine/phone/phone_gossip.asm"
-INCLUDE "engine/phone/buenas_password.asm"
+INCLUDE "engine/phone/scripts/generic_caller.asm"
+INCLUDE "engine/phone/scripts/jack_gossip.asm"
+INCLUDE "engine/phone/scripts/liz_gossip.asm"
+INCLUDE "engine/phone/scripts/chad_gossip.asm"
+INCLUDE "engine/phone/scripts/brent_gossip.asm"
+INCLUDE "engine/phone/scripts/irwin_gossip.asm"
+INCLUDE "engine/phone/scripts/hangups.asm"
+INCLUDE "engine/phone/scripts/reminders.asm"
+INCLUDE "engine/phone/scripts/hangups_2.asm"
+INCLUDE "engine/phone/scripts/reminders_2.asm"
+INCLUDE "engine/phone/scripts/bike_shop.asm"
+INCLUDE "engine/phone/scripts/buena.asm"
 
 
 SECTION "Phone Text", ROMX
@@ -359,11 +381,42 @@ INCLUDE "engine/pokegear/radio.asm"
 INCLUDE "engine/pokemon/mail_2.asm"
 
 
-SECTION "bank2F", ROMX
+SECTION "Phone Scripts 2", ROMX
 
 INCLUDE "engine/events/std_scripts.asm"
-INCLUDE "engine/phone/phone_scripts.asm"
-INCLUDE "engine/phone/generic_calls.asm"
+INCLUDE "engine/phone/scripts/unused.asm"
+INCLUDE "engine/phone/scripts/mom.asm"
+INCLUDE "engine/phone/scripts/bill.asm"
+INCLUDE "engine/phone/scripts/elm.asm"
+INCLUDE "engine/phone/scripts/jack.asm"
+INCLUDE "engine/phone/scripts/beverly.asm"
+INCLUDE "engine/phone/scripts/huey.asm"
+INCLUDE "engine/phone/scripts/gaven.asm"
+INCLUDE "engine/phone/scripts/beth.asm"
+INCLUDE "engine/phone/scripts/jose.asm"
+INCLUDE "engine/phone/scripts/reena.asm"
+INCLUDE "engine/phone/scripts/joey.asm"
+INCLUDE "engine/phone/scripts/wade.asm"
+INCLUDE "engine/phone/scripts/ralph.asm"
+INCLUDE "engine/phone/scripts/liz.asm"
+INCLUDE "engine/phone/scripts/anthony.asm"
+INCLUDE "engine/phone/scripts/todd.asm"
+INCLUDE "engine/phone/scripts/gina.asm"
+INCLUDE "engine/phone/scripts/irwin.asm"
+INCLUDE "engine/phone/scripts/arnie.asm"
+INCLUDE "engine/phone/scripts/alan.asm"
+INCLUDE "engine/phone/scripts/dana.asm"
+INCLUDE "engine/phone/scripts/chad.asm"
+INCLUDE "engine/phone/scripts/derek.asm"
+INCLUDE "engine/phone/scripts/tully.asm"
+INCLUDE "engine/phone/scripts/brent.asm"
+INCLUDE "engine/phone/scripts/tiffany.asm"
+INCLUDE "engine/phone/scripts/vance.asm"
+INCLUDE "engine/phone/scripts/wilton.asm"
+INCLUDE "engine/phone/scripts/kenji.asm"
+INCLUDE "engine/phone/scripts/parry.asm"
+INCLUDE "engine/phone/scripts/erin.asm"
+INCLUDE "engine/phone/scripts/generic_callee.asm"
 INCLUDE "engine/events/trainer_scripts.asm"
 
 
@@ -465,6 +518,8 @@ INCLUDE "engine/events/npc_trade.asm"
 INCLUDE "engine/events/mom_phone.asm"
 
 
+SECTION "mobile40", ROMX
+
 INCLUDE "mobile/mobile_40.asm"
 
 
@@ -479,7 +534,7 @@ INCLUDE "mobile/mobile_41.asm"
 INCLUDE "engine/gfx/load_overworld_font.asm"
 
 
-SECTION "Mobile 42", ROMX
+SECTION "mobile42", ROMX
 
 INCLUDE "mobile/mobile_42.asm"
 
@@ -496,8 +551,15 @@ INCLUDE "engine/movie/unused_title.asm"
 INCLUDE "engine/movie/title.asm"
 
 
-INCLUDE "mobile/mobile_45.asm"
+SECTION "mobile45", ROMX
 
+INCLUDE "mobile/mobile_45.asm"
+INCLUDE "mobile/mobile_45_sprite_engine.asm"
+INCLUDE "mobile/mobile_45_2.asm"
+INCLUDE "mobile/mobile_45_stadium.asm"
+
+
+SECTION "mobile46", ROMX
 
 INCLUDE "mobile/mobile_46.asm"
 
@@ -513,14 +575,28 @@ INCLUDE "mobile/mobile_5b.asm"
 INCLUDE "engine/link/link_trade.asm"
 
 
-SECTION "Mobile 5C", ROMX
+SECTION "mobile5C", ROMX
 
 INCLUDE "mobile/mobile_5c.asm"
 
 
 SECTION "Crystal Phone Text 2", ROMX
 
-INCLUDE "data/phone/text/extra2.asm"
+INCLUDE "data/phone/text/bike_shop.asm"
+INCLUDE "data/phone/text/jack_caller.asm"
+INCLUDE "data/phone/text/beverly_caller.asm"
+INCLUDE "data/phone/text/huey_caller.asm"
+INCLUDE "data/phone/text/gaven_caller.asm"
+INCLUDE "data/phone/text/beth_caller.asm"
+INCLUDE "data/phone/text/jose_caller.asm"
+INCLUDE "data/phone/text/reena_caller.asm"
+INCLUDE "data/phone/text/joey_caller.asm"
+INCLUDE "data/phone/text/wade_caller.asm"
+INCLUDE "data/phone/text/ralph_caller.asm"
+INCLUDE "data/phone/text/liz_caller.asm"
+INCLUDE "data/phone/text/anthony_caller.asm"
+INCLUDE "data/phone/text/todd_caller.asm"
+INCLUDE "data/phone/text/gina_caller.asm"
 
 
 SECTION "UpdateBattleHUDs", ROMX
@@ -528,12 +604,12 @@ SECTION "UpdateBattleHUDs", ROMX
 INCLUDE "engine/battle/update_battle_huds.asm"
 
 
-SECTION "Mobile 5E", ROMX
+SECTION "mobile5E", ROMX
 
 INCLUDE "mobile/mobile_5e.asm"
 
 
-SECTION "Mobile 5F", ROMX
+SECTION "mobile5F", ROMX
 
 INCLUDE "mobile/mobile_5f.asm"
 
@@ -559,7 +635,36 @@ SECTION "Special Phone Text", ROMX
 INCLUDE "data/phone/text/mom.asm"
 INCLUDE "data/phone/text/bill.asm"
 INCLUDE "data/phone/text/elm.asm"
-INCLUDE "data/phone/text/trainers.asm"
+INCLUDE "data/phone/text/jack_callee.asm"
+INCLUDE "data/phone/text/beverly_callee.asm"
+INCLUDE "data/phone/text/huey_callee.asm"
+INCLUDE "data/phone/text/unknown_callee.asm"
+INCLUDE "data/phone/text/gaven_callee.asm"
+INCLUDE "data/phone/text/beth_callee.asm"
+INCLUDE "data/phone/text/jose_callee.asm"
+INCLUDE "data/phone/text/reena_callee.asm"
+INCLUDE "data/phone/text/joey_callee.asm"
+INCLUDE "data/phone/text/wade_callee.asm"
+INCLUDE "data/phone/text/ralph_callee.asm"
+INCLUDE "data/phone/text/liz_callee.asm"
+INCLUDE "data/phone/text/anthony_callee.asm"
+INCLUDE "data/phone/text/todd_callee.asm"
+INCLUDE "data/phone/text/gina_callee.asm"
+INCLUDE "data/phone/text/irwin_callee.asm"
+INCLUDE "data/phone/text/arnie_callee.asm"
+INCLUDE "data/phone/text/alan_callee.asm"
+INCLUDE "data/phone/text/dana_callee.asm"
+INCLUDE "data/phone/text/chad_callee.asm"
+INCLUDE "data/phone/text/derek_callee.asm"
+INCLUDE "data/phone/text/tully_callee.asm"
+INCLUDE "data/phone/text/brent_callee.asm"
+INCLUDE "data/phone/text/tiffany_callee.asm"
+INCLUDE "data/phone/text/vance_callee.asm"
+INCLUDE "data/phone/text/wilton_callee.asm"
+INCLUDE "data/phone/text/kenji_callee.asm"
+INCLUDE "data/phone/text/parry_callee.asm"
+INCLUDE "data/phone/text/erin_callee.asm"
+INCLUDE "data/phone/text/unused.asm"
 
 
 SECTION "Miscellaneous Text", ROMX
@@ -615,8 +720,10 @@ INCLUDE "engine/events/odd_egg.asm"
 
 SECTION "Mobile Stadium 2", ROMX
 
-if DEF(_CRYSTAL11)
-INCBIN "mobile/stadium/stadium2_2.bin"
+if DEF(_CRYSTAL_AU)
+INCBIN "mobile/stadium/stadium2_au.bin"
+elif DEF(_CRYSTAL11)
+INCBIN "mobile/stadium/stadium2_11.bin"
 else
-INCBIN "mobile/stadium/stadium2_1.bin"
+INCBIN "mobile/stadium/stadium2.bin"
 endc

@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const RADIOTOWER5F_DIRECTOR
 	const RADIOTOWER5F_ROCKET
 	const RADIOTOWER5F_ROCKET_GIRL
@@ -42,7 +42,7 @@ FakeDirectorScript:
 	reloadmapafterbattle
 	opentext
 	writetext FakeDirectorTextAfter
-	buttonsound
+	promptbutton
 	verbosegiveitem BASEMENT_KEY
 	closetext
 	setscene SCENE_RADIOTOWER5F_ROCKET_BOSS
@@ -119,7 +119,7 @@ RadioTower5FRocketBossScene:
 	turnobject PLAYER, RIGHT
 	opentext
 	writetext RadioTower5FDirectorThankYouText
-	buttonsound
+	promptbutton
 	verbosegiveitem CLEAR_BELL
 	writetext RadioTower5FDirectorDescribeClearBellText
 	waitbutton
@@ -128,7 +128,7 @@ RadioTower5FRocketBossScene:
 	setmapscene ECRUTEAK_TIN_TOWER_ENTRANCE, SCENE_DEFAULT
 	setevent EVENT_GOT_CLEAR_BELL
 	setevent EVENT_TEAM_ROCKET_DISBANDED
-	jump .UselessJump
+	sjump .UselessJump
 
 .UselessJump:
 	applymovement RADIOTOWER5F_DIRECTOR, RadioTower5FDirectorWalksOut

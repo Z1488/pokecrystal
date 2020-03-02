@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const ECRUTEAKGYM_MORTY
 	const ECRUTEAKGYM_SAGE1
 	const ECRUTEAKGYM_SAGE2
@@ -15,7 +15,7 @@ EcruteakGym_MapScripts:
 	db 0 ; callbacks
 
 .ForcedToLeave:
-	priorityjump EcruteakGymClosed
+	prioritysjump EcruteakGymClosed
 	end
 
 .DummyScene:
@@ -39,7 +39,7 @@ EcruteakGymMortyScript:
 	playsound SFX_GET_BADGE
 	waitsfx
 	setflag ENGINE_FOGBADGE
-	checkcode VAR_BADGES
+	readvar VAR_BADGES
 	scall EcruteakGymActivateRockets
 	setmapscene ECRUTEAK_TIN_TOWER_ENTRANCE, SCENE_FINISHED
 	setevent EVENT_RANG_CLEAR_BELL_1
@@ -52,7 +52,7 @@ EcruteakGymMortyScript:
 	setevent EVENT_BEAT_MEDIUM_MARTHA
 	setevent EVENT_BEAT_MEDIUM_GRACE
 	writetext MortyText_FogBadgeSpeech
-	buttonsound
+	promptbutton
 	verbosegiveitem TM_SHADOW_BALL
 	iffalse .NoRoomForShadowBall
 	setevent EVENT_GOT_TM30_SHADOW_BALL
@@ -160,7 +160,7 @@ EcruteakGymStatue:
 	iftrue .Beaten
 	jumpstd gymstatue1
 .Beaten:
-	trainertotext MORTY, MORTY1, MEM_BUFFER_1
+	gettrainername STRING_BUFFER_4, MORTY, MORTY1
 	jumpstd gymstatue2
 
 EcruteakGymPlayerStepUpMovement:

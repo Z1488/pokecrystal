@@ -6,6 +6,8 @@
 	const POKEGEARCARD_RADIO ; 3
 NUM_POKEGEAR_CARDS EQU const_value
 
+PHONE_DISPLAY_HEIGHT EQU 4
+
 ; PokegearJumptable.Jumptable indexes
 	const_def
 	const POKEGEARSTATE_CLOCKINIT       ; 0
@@ -70,7 +72,7 @@ PokeGear:
 
 .InitTilemap:
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	call ClearSprites
 	call DisableLCD
 	xor a
@@ -163,7 +165,7 @@ INCBIN "gfx/pokegear/fast_ship.2bpp"
 InitPokegearModeIndicatorArrow:
 	depixel 4, 2, 4, 0
 	ld a, SPRITE_ANIM_INDEX_POKEGEAR_ARROW
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_TILE_ID
 	add hl, bc
 	ld [hl], $0
@@ -313,7 +315,7 @@ InitPokegearTilemap:
 	call PlaceString
 	hlcoord 0, 12
 	lb bc, 4, 18
-	call TextBox
+	call Textbox
 	call Pokegear_UpdateClock
 	ret
 
@@ -335,7 +337,7 @@ InitPokegearTilemap:
 .ok
 	farcall PokegearMap
 	ld a, $07
-	ld bc, $12
+	ld bc, SCREEN_WIDTH - 2
 	hlcoord 1, 2
 	call ByteFill
 	hlcoord 0, 2
@@ -351,7 +353,7 @@ InitPokegearTilemap:
 	call Pokegear_LoadTilemapRLE
 	hlcoord 0, 12
 	lb bc, 4, 18
-	call TextBox
+	call Textbox
 	ret
 
 .Phone:
@@ -359,7 +361,7 @@ InitPokegearTilemap:
 	call Pokegear_LoadTilemapRLE
 	hlcoord 0, 12
 	lb bc, 4, 18
-	call TextBox
+	call Textbox
 	call .PlacePhoneBars
 	call PokegearPhone_UpdateDisplayList
 	ret
@@ -459,7 +461,7 @@ PokegearJumptable:
 
 PokegearClock_Init:
 	call InitPokegearTilemap
-	ld hl, PokegearText_PressAnyButtonToExit
+	ld hl, PokegearPressButtonText
 	call PrintText
 	ld hl, wJumptableIndex
 	inc [hl]
@@ -523,7 +525,7 @@ Pokegear_UpdateClock:
 	ld c, a
 	decoord 6, 8
 	farcall PrintHoursMins
-	ld hl, .DayText
+	ld hl, .GearTodayText
 	bccoord 6, 6
 	call PlaceHLTextAtBC
 	ret
@@ -531,9 +533,9 @@ Pokegear_UpdateClock:
 	db "ごぜん@"
 	db "ごご@"
 
-.DayText:
-	text_far UnknownText_0x1c5821
-	db "@"
+.GearTodayText:
+	text_far _GearTodayText
+	text_end
 
 PokegearMap_CheckRegion:
 	ld a, [wPokegearMapPlayerIconLandmark]
@@ -669,7 +671,7 @@ PokegearMap_InitPlayerIcon:
 	ld b, SPRITE_ANIM_INDEX_BLUE_WALK
 .got_gender
 	ld a, b
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_TILE_ID
 	add hl, bc
 	ld [hl], $10
@@ -690,7 +692,7 @@ PokegearMap_InitCursor:
 	push af
 	depixel 0, 0
 	ld a, SPRITE_ANIM_INDEX_POKEGEAR_ARROW
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_TILE_ID
 	add hl, bc
 	ld [hl], $04
@@ -748,7 +750,7 @@ PokegearRadio_Init:
 	call InitPokegearTilemap
 	depixel 4, 10, 4, 4
 	ld a, SPRITE_ANIM_INDEX_RADIO_TUNING_KNOB
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_TILE_ID
 	add hl, bc
 	ld [hl], $08
@@ -812,7 +814,7 @@ PokegearPhone_Init:
 	ld [wPokegearPhoneSelectedPerson], a
 	call InitPokegearTilemap
 	call ExitPokegearRadio_HandleMusic
-	ld hl, PokegearText_WhomToCall
+	ld hl, PokegearAskWhoCallText
 	call PrintText
 	ret
 
@@ -878,7 +880,7 @@ PokegearPhone_Joypad:
 	ld [wPokegearPhoneSelectedPerson], a
 	hlcoord 1, 4
 	ld a, [wPokegearPhoneCursorPosition]
-	ld bc, 20 * 2
+	ld bc, SCREEN_WIDTH * 2
 	call AddNTimes
 	ld [hl], "▷"
 	call PokegearPhoneContactSubmenu
@@ -902,12 +904,12 @@ PokegearPhone_MakePhoneCall:
 	ldh [hInMenu], a
 	ld de, SFX_CALL
 	call PlaySFX
-	ld hl, .dotdotdot
+	ld hl, .GearEllipseText
 	call PrintText
 	call WaitSFX
 	ld de, SFX_CALL
 	call PlaySFX
-	ld hl, .dotdotdot
+	ld hl, .GearEllipseText
 	call PrintText
 	call WaitSFX
 	ld a, [wPokegearPhoneSelectedPerson]
@@ -926,23 +928,21 @@ PokegearPhone_MakePhoneCall:
 
 .no_service
 	farcall Phone_NoSignal
-	ld hl, .OutOfServiceArea
+	ld hl, .GearOutOfServiceText
 	call PrintText
 	ld a, POKEGEARSTATE_PHONEJOYPAD
 	ld [wJumptableIndex], a
-	ld hl, PokegearText_WhomToCall
+	ld hl, PokegearAskWhoCallText
 	call PrintText
 	ret
 
-.dotdotdot
-	;
-	text_far UnknownText_0x1c5824
-	db "@"
+.GearEllipseText:
+	text_far _GearEllipseText
+	text_end
 
-.OutOfServiceArea:
-	; You're out of the service area.
-	text_far UnknownText_0x1c5827
-	db "@"
+.GearOutOfServiceText:
+	text_far _GearOutOfServiceText
+	text_end
 
 PokegearPhone_FinishPhoneCall:
 	ldh a, [hJoyPressed]
@@ -951,7 +951,7 @@ PokegearPhone_FinishPhoneCall:
 	farcall HangUp
 	ld a, POKEGEARSTATE_PHONEJOYPAD
 	ld [wJumptableIndex], a
-	ld hl, PokegearText_WhomToCall
+	ld hl, PokegearAskWhoCallText
 	call PrintText
 	ret
 
@@ -984,7 +984,7 @@ PokegearPhone_GetDPad:
 .down
 	ld hl, wPokegearPhoneCursorPosition
 	ld a, [hl]
-	cp 3
+	cp PHONE_DISPLAY_HEIGHT - 1
 	jr nc, .scroll_page_down
 	inc [hl]
 	jr .done_joypad_same_page
@@ -992,7 +992,7 @@ PokegearPhone_GetDPad:
 .scroll_page_down
 	ld hl, wPokegearPhoneScrollPosition
 	ld a, [hl]
-	cp 6
+	cp CONTACT_LIST_SIZE - PHONE_DISPLAY_HEIGHT
 	ret nc
 	inc [hl]
 	jr .done_joypad_update_page
@@ -1013,14 +1013,12 @@ PokegearPhone_GetDPad:
 
 PokegearPhone_UpdateCursor:
 	ld a, " "
-	hlcoord 1, 4
+x = 4
+rept PHONE_DISPLAY_HEIGHT
+	hlcoord 1, x
 	ld [hl], a
-	hlcoord 1, 6
-	ld [hl], a
-	hlcoord 1, 8
-	ld [hl], a
-	hlcoord 1, 10
-	ld [hl], a
+x = x + 2
+endr
 	hlcoord 1, 4
 	ld a, [wPokegearPhoneCursorPosition]
 	ld bc, 2 * SCREEN_WIDTH
@@ -1030,10 +1028,10 @@ PokegearPhone_UpdateCursor:
 
 PokegearPhone_UpdateDisplayList:
 	hlcoord 1, 3
-	ld b, 9
+	ld b, PHONE_DISPLAY_HEIGHT * 2 + 1
 	ld a, " "
 .row
-	ld c, 18
+	ld c, SCREEN_WIDTH - 2
 .col
 	ld [hli], a
 	dec c
@@ -1044,7 +1042,7 @@ PokegearPhone_UpdateDisplayList:
 	jr nz, .row
 	ld a, [wPokegearPhoneScrollPosition]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wPhoneList
 	add hl, de
 	xor a
@@ -1066,7 +1064,7 @@ PokegearPhone_UpdateDisplayList:
 	ld a, [wPokegearPhoneLoadNameBuffer]
 	inc a
 	ld [wPokegearPhoneLoadNameBuffer], a
-	cp 4
+	cp PHONE_DISPLAY_HEIGHT
 	jr c, .loop
 	call PokegearPhone_UpdateCursor
 	ret
@@ -1138,7 +1136,7 @@ PokegearPhoneContactSubmenu:
 	ld b, a
 	ld c, 8
 	push de
-	call TextBox
+	call Textbox
 	pop de
 	pop hl
 	inc hl
@@ -1206,14 +1204,14 @@ PokegearPhoneContactSubmenu:
 	jp hl
 
 .Cancel:
-	ld hl, PokegearText_WhomToCall
+	ld hl, PokegearAskWhoCallText
 	call PrintText
 	scf
 	ret
 
 .Delete:
-	ld hl, PokegearText_DeleteStoredNumber
-	call MenuTextBox
+	ld hl, PokegearAskDeleteText
+	call MenuTextbox
 	call YesNoBox
 	call ExitMenu
 	jr c, .CancelDelete
@@ -1221,7 +1219,7 @@ PokegearPhoneContactSubmenu:
 	xor a
 	ldh [hBGMapMode], a
 	call PokegearPhone_UpdateDisplayList
-	ld hl, PokegearText_WhomToCall
+	ld hl, PokegearAskWhoCallText
 	call PrintText
 	call WaitBGMap
 .CancelDelete:
@@ -1311,7 +1309,7 @@ ExitPokegearRadio_HandleMusic:
 	cp RESTART_MAP_MUSIC
 	jr z, .restart_map_music
 	cp ENTER_MAP_MUSIC
-	call z, EnterMapMusic
+	call z, PlayMapMusicBike
 	xor a
 	ld [wPokegearRadioMusicPlaying], a
 	ret
@@ -1351,20 +1349,17 @@ Pokegear_LoadTilemapRLE:
 	jr nz, .load
 	jr .loop
 
-PokegearText_WhomToCall:
-	; Whom do you want to call?
-	text_far UnknownText_0x1c5847
-	db "@"
+PokegearAskWhoCallText:
+	text_far _PokegearAskWhoCallText
+	text_end
 
-PokegearText_PressAnyButtonToExit:
-	; Press any button to exit.
-	text_far UnknownText_0x1c5862
-	db "@"
+PokegearPressButtonText:
+	text_far _PokegearPressButtonText
+	text_end
 
-PokegearText_DeleteStoredNumber:
-	; Delete this stored phone number?
-	text_far UnknownText_0x1c587d
-	db "@"
+PokegearAskDeleteText:
+	text_far _PokegearAskDeleteText
+	text_end
 
 PokegearSpritesGFX:
 INCBIN "gfx/pokegear/pokegear_sprites.2bpp.lz"
@@ -1468,15 +1463,15 @@ RadioChannels:
 ; entries correspond to constants/radio_constants.asm
 
 ; frequency value given here = 4 × ingame_frequency − 2
-	dbw 16, .PKMNTalkAndPokedexShow
-	dbw 28, .PokemonMusic
-	dbw 32, .LuckyChannel
-	dbw 40, .BuenasPassword
-	dbw 52, .RuinsOfAlphRadio
-	dbw 64, .PlacesAndPeople
-	dbw 72, .LetsAllSing
-	dbw 78, .PokeFluteRadio
-	dbw 80, .EvolutionRadio
+	dbw 16, .PKMNTalkAndPokedexShow ; 04.5
+	dbw 28, .PokemonMusic           ; 07.5
+	dbw 32, .LuckyChannel           ; 08.5
+	dbw 40, .BuenasPassword         ; 10.5
+	dbw 52, .RuinsOfAlphRadio       ; 13.5
+	dbw 64, .PlacesAndPeople        ; 16.5
+	dbw 72, .LetsAllSing            ; 18.5
+	dbw 78, .PokeFluteRadio         ; 20.0
+	dbw 80, .EvolutionRadio         ; 20.5
 	db -1
 
 .PKMNTalkAndPokedexShow:
@@ -1758,7 +1753,7 @@ NoRadioName:
 	call ClearBox
 	hlcoord 0, 12
 	lb bc, 4, 18
-	call TextBox
+	call Textbox
 	ret
 
 OaksPKMNTalkName:     db "OAK's <PK><MN> Talk@"
@@ -1788,7 +1783,7 @@ _TownMap:
 	ld [wVramState], a
 
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	call ClearSprites
 	call DisableLCD
 	call Pokegear_LoadGFX
@@ -1988,7 +1983,7 @@ PlayRadio:
 	push de
 	hlcoord 0, 12
 	lb bc, 4, 18
-	call TextBox
+	call Textbox
 	hlcoord 1, 14
 	ld [hl], "“"
 	pop de
@@ -2040,7 +2035,7 @@ PokegearMap:
 
 _FlyMap:
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	call ClearSprites
 	ld hl, hInMenu
 	ld a, [hl]
@@ -2165,7 +2160,7 @@ TownMapBubble:
 	hlcoord 1, 1
 
 ; Middle row
-	ld bc, 18
+	ld bc, SCREEN_WIDTH - 2
 	ld a, " "
 	call ByteFill
 
@@ -2481,10 +2476,10 @@ Pokedex_GetArea:
 	ld a, " "
 	call ByteFill
 	hlcoord 0, 1
-	ld a, $6
+	ld a, $06
 	ld [hli], a
 	ld bc, SCREEN_WIDTH - 2
-	ld a, $7
+	ld a, $07
 	call ByteFill
 	ld [hl], $17
 	call GetPokemonName
@@ -2502,7 +2497,7 @@ Pokedex_GetArea:
 .GetAndPlaceNest:
 	ld [wTownMapCursorLandmark], a
 	ld e, a
-	farcall FindNest ; load nest landmarks into wTileMap[0,0]
+	farcall FindNest ; load nest landmarks into wTilemap[0,0]
 	decoord 0, 0
 	ld hl, wVirtualOAMSprite00
 .nestloop
@@ -2680,7 +2675,7 @@ FillTownMap:
 TownMapPals:
 ; Assign palettes based on tile ids
 	hlcoord 0, 0
-	decoord 0, 0, wAttrMap
+	decoord 0, 0, wAttrmap
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 .loop
 ; Current tile
@@ -2748,7 +2743,7 @@ TownMapMon:
 ; Animation/palette
 	depixel 0, 0
 	ld a, SPRITE_ANIM_INDEX_PARTY_MON
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_TILE_ID
 	add hl, bc
 	ld [hl], $08
@@ -2783,7 +2778,7 @@ TownMapPlayerIcon:
 	ld b, SPRITE_ANIM_INDEX_BLUE_WALK ; Female
 .got_gender
 	ld a, b
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_TILE_ID
 	add hl, bc
 	ld [hl], $10
@@ -2822,7 +2817,7 @@ Unreferenced_Function92311:
 	xor a
 	ld [wTownMapPlayerIconLandmark], a
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	call ClearSprites
 	ld hl, hInMenu
 	ld a, [hl]

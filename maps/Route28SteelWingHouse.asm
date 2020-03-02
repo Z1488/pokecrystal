@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const ROUTE28STEELWINGHOUSE_CELEBRITY
 	const ROUTE28STEELWINGHOUSE_FEAROW
 
@@ -17,7 +17,7 @@ Celebrity:
 	checkevent EVENT_GOT_TM47_STEEL_WING
 	iftrue .AlreadyGotItem
 	writetext CelebrityText1
-	buttonsound
+	promptbutton
 	verbosegiveitem TM_STEEL_WING
 	iffalse .Done
 	setevent EVENT_GOT_TM47_STEEL_WING

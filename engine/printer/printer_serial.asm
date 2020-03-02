@@ -9,8 +9,8 @@ Printer_StartTransmission:
 	ld [wPrinterOpcode], a
 	ld hl, wPrinterConnectionOpen
 	set 0, [hl]
-	ld a, [wGBPrinter]
-	ld [wGBPrinterSettings], a
+	ld a, [wGBPrinterBrightness]
+	ld [wPrinterExposureTime], a
 	xor a
 	ld [wJumptableIndex], a
 	ret
@@ -279,9 +279,9 @@ Printer_WaitHandshake:
 	ld [wPrinterOpcode], a
 	ld a, $88
 	ldh [rSB], a
-	ld a, $1
+	ld a, (0 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, $81
+	ld a, (1 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
 	ret
 
@@ -353,23 +353,23 @@ Printer_ComputeChecksum:
 Printer_StageHeaderForSend:
 	ld a, $1
 	ld [wGameboyPrinter2bppSource + 0], a
-	ld a, [wcbfa]
+	ld a, [wPrinterMargins]
 	ld [wGameboyPrinter2bppSource + 1], a
-	ld a, %11100100
+	ld a, %11100100 ; 3,2,1,0
 	ld [wGameboyPrinter2bppSource + 2], a
-	ld a, [wGBPrinterSettings]
+	ld a, [wPrinterExposureTime]
 	ld [wGameboyPrinter2bppSource + 3], a
 	ret
 
 Printer_Convert2RowsTo2bpp:
-	; de = wPrinterTileMapBuffer + 2 * SCREEN_WIDTH * ([wPrinterQueueLength] - [wPrinterRowIndex])
+	; de = wPrinterTilemapBuffer + 2 * SCREEN_WIDTH * ([wPrinterQueueLength] - [wPrinterRowIndex])
 	ld a, [wPrinterRowIndex]
 	xor $ff
 	ld d, a
 	ld a, [wPrinterQueueLength]
 	inc a
 	add d
-	ld hl, wPrinterTileMapBuffer
+	ld hl, wPrinterTilemapBuffer
 	ld de, 2 * SCREEN_WIDTH
 .loop1
 	and a
@@ -622,9 +622,9 @@ Printer_Send0x08:
 
 Printer_SerialSend:
 	ldh [rSB], a
-	ld a, $1 ; switch to internal clock
+	ld a, (0 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, $81 ; start transfer
+	ld a, (1 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
 	ret
 

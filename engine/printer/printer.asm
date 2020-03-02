@@ -26,12 +26,12 @@ Printer_CleanUpAfterSend:
 	ld [wPrinterOpcode], a
 	ret
 
-Printer_PrepareTileMapForPrint:
+Printer_PrepareTilemapForPrint:
 	push af
 	call Printer_StartTransmission
 	pop af
-	ld [wcbfa], a
-	call Printer_CopyTileMapToBuffer
+	ld [wPrinterMargins], a
+	call Printer_CopyTilemapToBuffer
 	ret
 
 Printer_ExitPrinter:
@@ -56,14 +56,14 @@ PrintDexEntry:
 	push af
 	xor a
 	ldh [rIF], a
-	ld a, $9
+	ld a, (1 << SERIAL) | (1 << VBLANK)
 	ldh [rIE], a
 
 	call Printer_StartTransmission
-	ld a, $10
-	ld [wcbfa], a
+	ln a, 1, 0
+	ld [wPrinterMargins], a
 	farcall PrintPage1
-	call ClearTileMap
+	call ClearTilemap
 	ld a, %11100100
 	call DmgToCgbBGPals
 	call DelayFrame
@@ -86,8 +86,8 @@ PrintDexEntry:
 	ldh [hBGMapMode], a
 
 	call Printer_StartTransmission
-	ld a, $3
-	ld [wcbfa], a
+	ln a, 0, 3
+	ld [wPrinterMargins], a
 	farcall PrintPage2
 	call Printer_ResetJoypadRegisters
 	ld a, 4
@@ -140,19 +140,19 @@ PrintPCBox:
 	push af
 	xor a
 	ldh [rIF], a
-	ld a, %1001
+	ld a, (1 << SERIAL) | (1 << VBLANK)
 	ldh [rIE], a
 
 	ld hl, hVBlank
 	ld a, [hl]
 	push af
-	ld [hl], %0100
+	ld [hl], $4
 
 	xor a
 	ldh [hBGMapMode], a
 	call PrintPCBox_Page1
-	ld a, $10 ; to be loaded to wcbfa
-	call Printer_PrepareTileMapForPrint
+	ln a, 1, 0 ; to be loaded to wPrinterMargins
+	call Printer_PrepareTilemapForPrint
 	call Printer_ResetRegistersAndStartDataSend
 	jr c, .cancel
 
@@ -162,8 +162,8 @@ PrintPCBox:
 	xor a
 	ldh [hBGMapMode], a
 	call PrintPCBox_Page2
-	ld a, $0 ; to be loaded to wcbfa
-	call Printer_PrepareTileMapForPrint
+	ln a, 0, 0 ; to be loaded to wPrinterMargins
+	call Printer_PrepareTilemapForPrint
 	call Printer_ResetRegistersAndStartDataSend
 	jr c, .cancel
 
@@ -174,8 +174,8 @@ PrintPCBox:
 	xor a
 	ldh [hBGMapMode], a
 	call PrintPCBox_Page3
-	ld a, $0 ; to be loaded to wcbfa
-	call Printer_PrepareTileMapForPrint
+	ln a, 0, 0 ; to be loaded to wPrinterMargins
+	call Printer_PrepareTilemapForPrint
 	call Printer_ResetRegistersAndStartDataSend
 	jr c, .cancel
 
@@ -186,8 +186,8 @@ PrintPCBox:
 	xor a
 	ldh [hBGMapMode], a
 	call PrintPCBox_Page4
-	ld a, $3 ; to be loaded to wcbfa
-	call Printer_PrepareTileMapForPrint
+	ln a, 0, 3 ; to be loaded to wPrinterMargins
+	call Printer_PrepareTilemapForPrint
 	call Printer_ResetRegistersAndStartDataSend
 .cancel
 	pop af
@@ -219,7 +219,7 @@ PrintUnownStamp:
 	push af
 	xor a
 	ldh [rIF], a
-	ld a, $9
+	ld a, (1 << SERIAL) | (1 << VBLANK)
 	ldh [rIE], a
 	ld hl, hVBlank
 	ld a, [hl]
@@ -227,11 +227,11 @@ PrintUnownStamp:
 	ld [hl], $4
 	xor a
 	ldh [hBGMapMode], a
-	call LoadTileMapToTempTileMap
+	call LoadTilemapToTempTilemap
 	farcall PlaceUnownPrinterFrontpic
-	ld a, $0 ; to be loaded to wcbfa
-	call Printer_PrepareTileMapForPrint
-	call Call_LoadTempTileMapToTileMap
+	ln a, 0, 0 ; to be loaded to wPrinterMargins
+	call Printer_PrepareTilemapForPrint
+	call SafeLoadTempTilemapToTilemap
 	call Printer_ResetJoypadRegisters
 	ld a, 18 / 2
 	ld [wPrinterQueueLength], a
@@ -259,7 +259,7 @@ PrintUnownStamp:
 	pop af
 	ldh [hVBlank], a
 	call Printer_CleanUpAfterSend
-	call Call_LoadTempTileMapToTileMap
+	call SafeLoadTempTilemapToTilemap
 	xor a
 	ldh [rIF], a
 	pop af
@@ -284,18 +284,18 @@ PrintMail:
 	push af
 	xor a
 	ldh [rIF], a
-	ld a, %1001
+	ld a, (1 << SERIAL) | (1 << VBLANK)
 	ldh [rIE], a
 
 	xor a
 	ldh [hBGMapMode], a
 
-	ld a, $13 ; to be loaded to wcbfa
-	call Printer_PrepareTileMapForPrint
+	ln a, 1, 3 ; to be loaded to wPrinterMargins
+	call Printer_PrepareTilemapForPrint
 	ld hl, hVBlank
 	ld a, [hl]
 	push af
-	ld [hl], %0100
+	ld [hl], $4
 
 	ld a, 18 / 2
 	ld [wPrinterQueueLength], a
@@ -304,7 +304,7 @@ PrintMail:
 	pop af
 	ldh [hVBlank], a
 	call Printer_CleanUpAfterSend
-	call Printer_CopyBufferToTileMap
+	call Printer_CopyBufferToTilemap
 
 	xor a
 	ldh [rIF], a
@@ -326,19 +326,19 @@ PrintPartymon:
 	push af
 	xor a
 	ldh [rIF], a
-	ld a, %1001
+	ld a, (1 << SERIAL) | (1 << VBLANK)
 	ldh [rIE], a
 
 	xor a
 	ldh [hBGMapMode], a
 	farcall PrintPartyMonPage1
-	ld a, $10 ; to be loaded to wcbfa
-	call Printer_PrepareTileMapForPrint
+	ln a, 1, 0 ; to be loaded to wPrinterMargins
+	call Printer_PrepareTilemapForPrint
 
 	ld hl, hVBlank
 	ld a, [hl]
 	push af
-	ld [hl], %0100
+	ld [hl], $4
 
 	ld a, 16 / 2
 	ld [wPrinterQueueLength], a
@@ -353,8 +353,8 @@ PrintPartymon:
 	xor a
 	ldh [hBGMapMode], a
 	farcall PrintPartyMonPage2
-	ld a, $3 ; to be loaded to wcbfa
-	call Printer_PrepareTileMapForPrint
+	ln a, 0, 3 ; to be loaded to wPrinterMargins
+	call Printer_PrepareTilemapForPrint
 
 	ld a, 18 / 2
 	ld [wPrinterQueueLength], a
@@ -365,7 +365,7 @@ PrintPartymon:
 	ldh [hVBlank], a
 	call Printer_CleanUpAfterSend
 
-	call Printer_CopyBufferToTileMap
+	call Printer_CopyBufferToTilemap
 	xor a
 	ldh [rIF], a
 	pop af
@@ -390,16 +390,16 @@ _PrintDiploma:
 	push af
 	xor a
 	ldh [rIF], a
-	ld a, %1001
+	ld a, (1 << SERIAL) | (1 << VBLANK)
 	ldh [rIE], a
 
 	ld hl, hVBlank
 	ld a, [hl]
 	push af
-	ld [hl], %0100
+	ld [hl], $4
 
-	ld a, $10 ; to be loaded to wcbfa
-	call Printer_PrepareTileMapForPrint
+	ln a, 1, 0 ; to be loaded to wPrinterMargins
+	call Printer_PrepareTilemapForPrint
 	call Printer_ResetJoypadRegisters
 
 	ld a, 18 / 2
@@ -410,15 +410,15 @@ _PrintDiploma:
 	ld c, 12
 	call DelayFrames
 
-	call LoadTileMapToTempTileMap
+	call LoadTilemapToTempTilemap
 	xor a
 	ldh [hBGMapMode], a
 
 	farcall PrintDiplomaPage2
 
-	ld a, $3 ; to be loaded to wcbfa
-	call Printer_PrepareTileMapForPrint
-	call Call_LoadTempTileMapToTileMap
+	ln a, 0, 3 ; to be loaded to wPrinterMargins
+	call Printer_PrepareTilemapForPrint
+	call SafeLoadTempTilemapToTilemap
 	call Printer_ResetJoypadRegisters
 
 	ld a, 18 / 2
@@ -458,9 +458,9 @@ CheckCancelPrint:
 	ld [wPrinterOpcode], a
 	ld a, $88
 	ldh [rSB], a
-	ld a, $1
+	ld a, (0 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, $81
+	ld a, (1 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
 .loop2
 	ld a, [wPrinterOpcode]
@@ -473,15 +473,15 @@ CheckCancelPrint:
 	scf
 	ret
 
-Printer_CopyTileMapToBuffer:
+Printer_CopyTilemapToBuffer:
 	hlcoord 0, 0
-	ld de, wPrinterTileMapBuffer
+	ld de, wPrinterTilemapBuffer
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	call CopyBytes
 	ret
 
-Printer_CopyBufferToTileMap:
-	ld hl, wPrinterTileMapBuffer
+Printer_CopyBufferToTilemap:
+	ld hl, wPrinterTilemapBuffer
 	decoord 0, 0
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	call CopyBytes
@@ -554,7 +554,7 @@ PlacePrinterStatusString:
 	ldh [hBGMapMode], a
 	hlcoord 0, 5
 	lb bc, 10, 18
-	call TextBox
+	call Textbox
 	pop af
 	ld e, a
 	ld d, 0
@@ -820,7 +820,7 @@ Printer_GetMonGender:
 	ld l, a
 	ld a, [wAddrOfBoxToPrint + 1]
 	ld h, a
-	ld bc, $2b
+	ld bc, 2 + MONS_PER_BOX + MON_DVS
 	add hl, bc
 	ld bc, BOXMON_STRUCT_LENGTH
 	ld a, [wWhichBoxMonToPrint]

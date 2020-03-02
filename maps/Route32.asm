@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const ROUTE32_FISHER1
 	const ROUTE32_FISHER2
 	const ROUTE32_FISHER3
@@ -33,7 +33,7 @@ Route32_MapScripts:
 	end
 
 .Frieda:
-	checkcode VAR_WEEKDAY
+	readvar VAR_WEEKDAY
 	ifequal FRIDAY, .FriedaAppears
 	disappear ROUTE32_FRIEDA
 	return
@@ -65,11 +65,11 @@ Route32CooltrainerMContinueScene:
 
 .GiveMiracleSeed:
 	writetext Route32CooltrainerMText_HaveThisSeed
-	buttonsound
+	promptbutton
 	verbosegiveitem MIRACLE_SEED
 	iffalse .BagFull
 	setevent EVENT_GOT_MIRACLE_SEED_IN_ROUTE_32
-	jump .GotMiracleSeed
+	sjump .GotMiracleSeed
 
 .DontHaveZephyrBadge:
 	writetext Route32CooltrainerMText_VioletGym
@@ -106,7 +106,7 @@ Route32RoarTMGuyScript:
 	checkevent EVENT_GOT_TM05_ROAR
 	iftrue .AlreadyHaveRoar
 	writetext Text_RoarIntro
-	buttonsound
+	promptbutton
 	verbosegiveitem TM_ROAR
 	iffalse .Finish
 	setevent EVENT_GOT_TM05_ROAR
@@ -120,7 +120,7 @@ Route32RoarTMGuyScript:
 Route32WannaBuyASlowpokeTailScript:
 	turnobject ROUTE32_FISHER4, DOWN
 	turnobject PLAYER, UP
-	jump _OfferToSellSlowpokeTail
+	sjump _OfferToSellSlowpokeTail
 
 SlowpokeTailSalesmanScript:
 	faceplayer
@@ -167,7 +167,7 @@ TrainerFisherRalph1:
 	trainer FISHER, RALPH1, EVENT_BEAT_FISHER_RALPH, FisherRalph1SeenText, FisherRalph1BeatenText, 0, .Script
 
 .Script:
-	writecode VAR_CALLERID, PHONE_FISHER_RALPH
+	loadvar VAR_CALLERID, PHONE_FISHER_RALPH
 	endifjustbattled
 	opentext
 	checkflag ENGINE_RALPH
@@ -179,10 +179,10 @@ TrainerFisherRalph1:
 	checkevent EVENT_RALPH_ASKED_FOR_PHONE_NUMBER
 	iftrue .AskAgain
 	writetext FisherRalphAfterText
-	buttonsound
+	promptbutton
 	setevent EVENT_RALPH_ASKED_FOR_PHONE_NUMBER
 	scall .AskNumber1
-	jump .AskForNumber
+	sjump .AskForNumber
 
 .AskAgain:
 	scall .AskNumber2
@@ -190,14 +190,14 @@ TrainerFisherRalph1:
 	askforphonenumber PHONE_FISHER_RALPH
 	ifequal PHONE_CONTACTS_FULL, .PhoneFull
 	ifequal PHONE_CONTACT_REFUSED, .NumberDeclined
-	trainertotext FISHER, RALPH1, MEM_BUFFER_0
+	gettrainername STRING_BUFFER_3, FISHER, RALPH1
 	scall .RegisteredNumber
-	jump .NumberAccepted
+	sjump .NumberAccepted
 
 .Rematch:
 	scall .RematchStd
 	winlosstext FisherRalph1BeatenText, 0
-	copybytetovar wRalphFightCount
+	readmem wRalphFightCount
 	ifequal 4, .Fight4
 	ifequal 3, .Fight3
 	ifequal 2, .Fight2
@@ -219,7 +219,7 @@ TrainerFisherRalph1:
 	loadtrainer FISHER, RALPH1
 	startbattle
 	reloadmapafterbattle
-	loadvar wRalphFightCount, 1
+	loadmem wRalphFightCount, 1
 	clearflag ENGINE_RALPH
 	end
 
@@ -227,7 +227,7 @@ TrainerFisherRalph1:
 	loadtrainer FISHER, RALPH2
 	startbattle
 	reloadmapafterbattle
-	loadvar wRalphFightCount, 2
+	loadmem wRalphFightCount, 2
 	clearflag ENGINE_RALPH
 	end
 
@@ -235,7 +235,7 @@ TrainerFisherRalph1:
 	loadtrainer FISHER, RALPH3
 	startbattle
 	reloadmapafterbattle
-	loadvar wRalphFightCount, 3
+	loadmem wRalphFightCount, 3
 	clearflag ENGINE_RALPH
 	end
 
@@ -243,7 +243,7 @@ TrainerFisherRalph1:
 	loadtrainer FISHER, RALPH4
 	startbattle
 	reloadmapafterbattle
-	loadvar wRalphFightCount, 4
+	loadmem wRalphFightCount, 4
 	clearflag ENGINE_RALPH
 	end
 
@@ -303,7 +303,7 @@ TrainerPicnickerLiz1:
 	trainer PICNICKER, LIZ1, EVENT_BEAT_PICNICKER_LIZ, PicnickerLiz1SeenText, PicnickerLiz1BeatenText, 0, .Script
 
 .Script:
-	writecode VAR_CALLERID, PHONE_PICNICKER_LIZ
+	loadvar VAR_CALLERID, PHONE_PICNICKER_LIZ
 	endifjustbattled
 	opentext
 	checkflag ENGINE_LIZ
@@ -313,10 +313,10 @@ TrainerPicnickerLiz1:
 	checkevent EVENT_LIZ_ASKED_FOR_PHONE_NUMBER
 	iftrue .AskAgain
 	writetext PicnickerLiz1AfterText
-	buttonsound
+	promptbutton
 	setevent EVENT_LIZ_ASKED_FOR_PHONE_NUMBER
 	scall .AskNumber1
-	jump .AskForNumber
+	sjump .AskForNumber
 
 .AskAgain:
 	scall .AskNumber2
@@ -324,14 +324,14 @@ TrainerPicnickerLiz1:
 	askforphonenumber PHONE_PICNICKER_LIZ
 	ifequal PHONE_CONTACTS_FULL, .PhoneFull
 	ifequal PHONE_CONTACT_REFUSED, .NumberDeclined
-	trainertotext PICNICKER, LIZ1, MEM_BUFFER_0
+	gettrainername STRING_BUFFER_3, PICNICKER, LIZ1
 	scall .RegisteredNumber
-	jump .NumberAccepted
+	sjump .NumberAccepted
 
 .Rematch:
 	scall .RematchStd
 	winlosstext PicnickerLiz1BeatenText, 0
-	copybytetovar wLizFightCount
+	readmem wLizFightCount
 	ifequal 4, .Fight4
 	ifequal 3, .Fight3
 	ifequal 2, .Fight2
@@ -353,7 +353,7 @@ TrainerPicnickerLiz1:
 	loadtrainer PICNICKER, LIZ1
 	startbattle
 	reloadmapafterbattle
-	loadvar wLizFightCount, 1
+	loadmem wLizFightCount, 1
 	clearflag ENGINE_LIZ
 	end
 
@@ -361,7 +361,7 @@ TrainerPicnickerLiz1:
 	loadtrainer PICNICKER, LIZ2
 	startbattle
 	reloadmapafterbattle
-	loadvar wLizFightCount, 2
+	loadmem wLizFightCount, 2
 	clearflag ENGINE_LIZ
 	end
 
@@ -369,7 +369,7 @@ TrainerPicnickerLiz1:
 	loadtrainer PICNICKER, LIZ3
 	startbattle
 	reloadmapafterbattle
-	loadvar wLizFightCount, 3
+	loadmem wLizFightCount, 3
 	clearflag ENGINE_LIZ
 	end
 
@@ -377,7 +377,7 @@ TrainerPicnickerLiz1:
 	loadtrainer PICNICKER, LIZ4
 	startbattle
 	reloadmapafterbattle
-	loadvar wLizFightCount, 4
+	loadmem wLizFightCount, 4
 	clearflag ENGINE_LIZ
 	end
 
@@ -454,16 +454,16 @@ FriedaScript:
 	opentext
 	checkevent EVENT_GOT_POISON_BARB_FROM_FRIEDA
 	iftrue .Friday
-	checkcode VAR_WEEKDAY
+	readvar VAR_WEEKDAY
 	ifnotequal FRIDAY, .NotFriday
 	checkevent EVENT_MET_FRIEDA_OF_FRIDAY
 	iftrue .MetFrieda
 	writetext MeetFriedaText
-	buttonsound
+	promptbutton
 	setevent EVENT_MET_FRIEDA_OF_FRIDAY
 .MetFrieda:
 	writetext FriedaGivesGiftText
-	buttonsound
+	promptbutton
 	verbosegiveitem POISON_BARB
 	iffalse .Done
 	setevent EVENT_GOT_POISON_BARB_FROM_FRIEDA

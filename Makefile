@@ -1,15 +1,4 @@
-ifeq (,$(shell which sha1sum))
-SHA1 := shasum
-else
-SHA1 := sha1sum
-endif
-
-RGBASM := rgbasm
-RGBFIX := rgbfix
-RGBGFX := rgbgfx
-RGBLINK := rgblink
-
-roms := pokecrystal.gbc pokecrystal11.gbc
+roms := pokecrystal.gbc pokecrystal11.gbc pokecrystal-au.gbc
 
 crystal_obj := \
 audio.o \
@@ -25,15 +14,32 @@ engine/movie/credits.o \
 engine/overworld/events.o \
 gfx/pics.o \
 gfx/sprites.o \
+gfx/tilesets.o \
 lib/mobile/main.o
 
 crystal11_obj := $(crystal_obj:.o=11.o)
+crystal_au_obj := $(crystal_obj:.o=_au.o)
+
+
+### Build tools
+
+ifeq (,$(shell which sha1sum))
+SHA1 := shasum
+else
+SHA1 := sha1sum
+endif
+
+RGBDS ?=
+RGBASM  ?= $(RGBDS)rgbasm
+RGBFIX  ?= $(RGBDS)rgbfix
+RGBGFX  ?= $(RGBDS)rgbgfx
+RGBLINK ?= $(RGBDS)rgblink
 
 
 ### Build targets
 
 .SUFFIXES:
-.PHONY: all crystal crystal11 clean compare tools tidy
+.PHONY: all crystal crystal11 crystal_au clean tidy compare tools
 .SECONDEXPANSION:
 .PRECIOUS:
 .SECONDARY:
@@ -41,15 +47,16 @@ crystal11_obj := $(crystal_obj:.o=11.o)
 all: crystal
 crystal: pokecrystal.gbc
 crystal11: pokecrystal11.gbc
+crystal-au: pokecrystal-au.gbc
 
 clean:
-	rm -f $(roms) $(crystal_obj) $(crystal11_obj) $(roms:.gbc=.map) $(roms:.gbc=.sym)
+	rm -f $(roms) $(crystal_obj) $(crystal11_obj) $(crystal_au_obj) $(roms:.gbc=.map) $(roms:.gbc=.sym)
 	find gfx \( -name "*.[12]bpp" -o -name "*.lz" -o -name "*.gbcpal" \) -delete
 	find gfx/pokemon -mindepth 1 ! -path "gfx/pokemon/unown/*" \( -name "bitmask.asm" -o -name "frames.asm" -o -name "front.animated.tilemap" -o -name "front.dimensions" \) -delete
 	$(MAKE) clean -C tools/
 
 tidy:
-	rm -f $(roms) $(crystal_obj) $(crystal11_obj) $(roms:.gbc=.map) $(roms:.gbc=.sym)
+	rm -f $(roms) $(crystal_obj) $(crystal11_obj) $(crystal_au_obj) $(roms:.gbc=.map) $(roms:.gbc=.sym)
 	$(MAKE) clean -C tools/
 
 compare: $(roms)
@@ -59,8 +66,9 @@ tools:
 	$(MAKE) -C tools/
 
 
-$(crystal_obj):   RGBASMFLAGS = -D _CRYSTAL
-$(crystal11_obj): RGBASMFLAGS = -D _CRYSTAL -D _CRYSTAL11
+$(crystal_obj):   RGBASMFLAGS =
+$(crystal11_obj): RGBASMFLAGS = -D _CRYSTAL11
+$(crystal_au_obj): RGBASMFLAGS = -D _CRYSTAL11 -D _CRYSTAL_AU
 
 # The dep rules have to be explicit or else missing files won't be reported.
 # As a side effect, they're evaluated immediately instead of when the rule is invoked.
@@ -76,6 +84,7 @@ ifeq (,$(filter clean tools,$(MAKECMDGOALS)))
 
 $(info $(shell $(MAKE) -C tools))
 
+$(foreach obj, $(crystal_au_obj), $(eval $(call DEP,$(obj),$(obj:_au.o=.asm))))
 $(foreach obj, $(crystal11_obj), $(eval $(call DEP,$(obj),$(obj:11.o=.asm))))
 $(foreach obj, $(crystal_obj), $(eval $(call DEP,$(obj),$(obj:.o=.asm))))
 
@@ -91,6 +100,11 @@ pokecrystal11.gbc: $(crystal11_obj) pokecrystal.link
 	$(RGBLINK) -n pokecrystal11.sym -m pokecrystal11.map -l pokecrystal.link -o $@ $(crystal11_obj)
 	$(RGBFIX) -Cjv -i BYTE -k 01 -l 0x33 -m 0x10 -n 1 -p 0 -r 3 -t PM_CRYSTAL $@
 	tools/sort_symfile.sh pokecrystal11.sym
+
+pokecrystal-au.gbc: $(crystal_au_obj) pokecrystal.link
+	$(RGBLINK) -n pokecrystal-au.sym -m pokecrystal-au.map -l pokecrystal.link -o $@ $(crystal_au_obj)
+	$(RGBFIX) -Cjv -i BYTU -k 01 -l 0x33 -m 0x10 -p 0 -r 3 -t PM_CRYSTAL $@
+	tools/sort_symfile.sh pokecrystal-au.sym
 
 
 # For files that the compressor can't match, there will be a .lz file suffixed with the md5 hash of the correct uncompressed file.
@@ -143,6 +157,8 @@ gfx/pokemon/%/back.2bpp: rgbgfx += -h
 
 gfx/trainers/%.2bpp: rgbgfx += -h
 
+gfx/pokemon/egg/unused_front.2bpp: rgbgfx += -h
+
 gfx/new_game/shrink1.2bpp: rgbgfx += -h
 gfx/new_game/shrink2.2bpp: rgbgfx += -h
 
@@ -153,7 +169,8 @@ gfx/mail/flower_mail_border.1bpp: tools/gfx += --remove-whitespace
 gfx/mail/litebluemail_border.1bpp: tools/gfx += --remove-whitespace
 
 gfx/pokedex/pokedex.2bpp: tools/gfx += --trim-whitespace
-gfx/pokedex/sgb.2bpp: tools/gfx += --trim-whitespace
+gfx/pokedex/pokedex_sgb.2bpp: tools/gfx += --trim-whitespace
+gfx/pokedex/question_mark.2bpp: rgbgfx += -h
 gfx/pokedex/slowpoke.2bpp: tools/gfx += --trim-whitespace
 
 gfx/pokegear/pokegear.2bpp: rgbgfx += -x2
@@ -166,11 +183,12 @@ gfx/title/old_fg.2bpp: tools/gfx += --interleave --png=$<
 gfx/title/logo.2bpp: rgbgfx += -x 4
 
 gfx/trade/ball.2bpp: tools/gfx += --remove-whitespace
-gfx/trade/game_boy_n64.2bpp: tools/gfx += --trim-whitespace
 
+gfx/slots/slots_1.2bpp: tools/gfx += --trim-whitespace
 gfx/slots/slots_2.2bpp: tools/gfx += --interleave --png=$<
 gfx/slots/slots_3.2bpp: tools/gfx += --interleave --png=$< --remove-duplicates --keep-whitespace --remove-xflip
 
+gfx/card_flip/card_flip_1.2bpp: tools/gfx += --trim-whitespace
 gfx/card_flip/card_flip_2.2bpp: tools/gfx += --remove-whitespace
 
 gfx/battle_anims/angels.2bpp: tools/gfx += --trim-whitespace
@@ -203,6 +221,8 @@ gfx/trainer_card/leaders.2bpp: tools/gfx += --trim-whitespace
 gfx/overworld/chris_fish.2bpp: tools/gfx += --trim-whitespace
 gfx/overworld/kris_fish.2bpp: tools/gfx += --trim-whitespace
 
+gfx/sprites/big_onix.2bpp: tools/gfx += --remove-whitespace --remove-xflip
+
 gfx/battle/dude.2bpp: rgbgfx += -h
 
 gfx/font/unused_bold_font.1bpp: tools/gfx += --trim-whitespace
@@ -210,13 +230,17 @@ gfx/font/unused_bold_font.1bpp: tools/gfx += --trim-whitespace
 gfx/sgb/sgb_border.2bpp: tools/gfx += --trim-whitespace
 
 gfx/mobile/ascii_font.2bpp: tools/gfx += --trim-whitespace
+gfx/mobile/dialpad.2bpp: tools/gfx += --trim-whitespace
+gfx/mobile/dialpad_cursor.2bpp: tools/gfx += --trim-whitespace
 gfx/mobile/electro_ball.2bpp: tools/gfx += --trim-whitespace
 gfx/mobile/electro_ball_nonmatching.2bpp: tools/gfx += --remove-duplicates --remove-xflip
-gfx/mobile/mobile_adapter.2bpp: tools/gfx += --trim-whitespace
 gfx/mobile/mobile_splash.2bpp: tools/gfx += --remove-duplicates --remove-xflip
+gfx/mobile/card.2bpp: tools/gfx += --trim-whitespace
+gfx/mobile/card_2.2bpp: tools/gfx += --trim-whitespace
+gfx/mobile/card_folder.2bpp: tools/gfx += --trim-whitespace
+gfx/mobile/phone_tiles.2bpp: tools/gfx += --remove-whitespace
 gfx/mobile/pichu_animated.2bpp: tools/gfx += --trim-whitespace
-
-gfx/unknown/unknown_egg.2bpp: rgbgfx += -h
+gfx/mobile/stadium2_n64.2bpp: tools/gfx += --trim-whitespace
 
 
 ### Catch-all graphics rules

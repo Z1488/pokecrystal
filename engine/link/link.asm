@@ -50,17 +50,17 @@ Gen2ToGen1LinkComms:
 	call DelayFrames
 	xor a
 	ldh [hSerialSend], a
-	ld a, (0 << rSC_ON) | 1
+	ld a, (0 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 1
+	ld a, (1 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
 
 	call DelayFrame
 	xor a
 	ldh [hSerialSend], a
-	ld a, (0 << rSC_ON) | 1
+	ld a, (0 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 1
+	ld a, (1 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
 
 .player_1
@@ -70,7 +70,7 @@ Gen2ToGen1LinkComms:
 	call DelayFrames
 	xor a
 	ldh [rIF], a
-	ld a, $8
+	ld a, 1 << SERIAL
 	ldh [rIE], a
 	ld hl, wd1f3
 	ld de, wEnemyMonSpecies
@@ -90,7 +90,7 @@ Gen2ToGen1LinkComms:
 	call Serial_ExchangeBytes
 	xor a
 	ldh [rIF], a
-	ld a, $1d
+	ld a, (1 << JOYPAD) | (1 << SERIAL) | (1 << TIMER) | (1 << VBLANK)
 	ldh [rIE], a
 	call Link_CopyRandomNumbers
 	ld hl, wOTPlayerName
@@ -194,17 +194,17 @@ Gen2ToGen2LinkComms:
 	call DelayFrames
 	xor a
 	ldh [hSerialSend], a
-	ld a, (0 << rSC_ON) | 1
+	ld a, (0 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 1
+	ld a, (1 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
 
 	call DelayFrame
 	xor a
 	ldh [hSerialSend], a
-	ld a, (0 << rSC_ON) | 1
+	ld a, (0 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 1
+	ld a, (1 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
 
 .Player1:
@@ -214,7 +214,7 @@ Gen2ToGen2LinkComms:
 	call DelayFrames
 	xor a
 	ldh [rIF], a
-	ld a, $8
+	ld a, 1 << SERIAL
 	ldh [rIE], a
 	ld hl, wd1f3
 	ld de, wEnemyMonSpecies
@@ -243,7 +243,7 @@ Gen2ToGen2LinkComms:
 .not_trading
 	xor a
 	ldh [rIF], a
-	ld a, $1d
+	ld a, (1 << JOYPAD) | (1 << SERIAL) | (1 << TIMER) | (1 << VBLANK)
 	ldh [rIE], a
 	ld de, MUSIC_NONE
 	call PlayMusic
@@ -371,13 +371,13 @@ Gen2ToGen2LinkComms:
 	jr z, .next
 	sub $3
 	jr nc, .skip
-	farcall DeutenEnglischenPost
+	farcall ConvertEnglishMailToFrenchGerman
 	jr .next
 
 .skip
 	cp $2
 	jr nc, .next
-	farcall HandleSpanishItalianMail
+	farcall ConvertEnglishMailToSpanishItalian
 
 .next
 	pop de
@@ -447,7 +447,7 @@ Gen2ToGen2LinkComms:
 	xor a
 	ldh [rIF], a
 	ldh a, [rIE]
-	set 1, a
+	set LCD_STAT, a
 	ldh [rIE], a
 	pop af
 	ldh [rIF], a
@@ -475,7 +475,7 @@ Gen2ToGen2LinkComms:
 	jp InitTradeMenuDisplay
 
 LinkTimeout:
-	ld de, .TooMuchTimeHasElapsed
+	ld de, .LinkTimeoutText
 	ld b, 10
 .loop
 	call DelayFrame
@@ -505,10 +505,9 @@ LinkTimeout:
 	call WaitBGMap2
 	ret
 
-.TooMuchTimeHasElapsed:
-	; Too much time has elapsed. Please try again.
-	text_far UnknownText_0x1c4183
-	db "@"
+.LinkTimeoutText:
+	text_far _LinkTimeoutText
+	text_end
 
 ExchangeBytes:
 	ld a, TRUE
@@ -585,7 +584,7 @@ FixDataForLinkTransfer:
 	ld [hli], a
 	dec b
 	jr nz, .loop3
-	ld hl, wTimeCapsulePartyMon1 - 1 + 6
+	ld hl, wTimeCapsulePartyMon1 - 1 + PARTY_LENGTH
 	ld de, wc612
 	lb bc, 0, 0
 .loop4
@@ -876,13 +875,13 @@ Link_PrepPartyData_Gen2:
 	jr z, .next
 	sub $3
 	jr nc, .italian_spanish
-	farcall HandleFrenchGermanMail
+	farcall ConvertFrenchGermanMailToEnglish
 	jr .next
 
 .italian_spanish
 	cp $2
 	jr nc, .next
-	farcall HandleSpanishItalianMail
+	farcall ConvertSpanishItalianMailToEnglish
 
 .next
 	pop de
@@ -1329,7 +1328,7 @@ LinkTradePartiesMenuMasterLoop:
 	jp LinkTradeOTPartymonMenuLoop  ; OTPARTYMON
 
 Function28926:
-	call LoadTileMapToTempTileMap
+	call LoadTilemapToTempTilemap
 	ld a, [wMenuCursorY]
 	push af
 	hlcoord 0, 15
@@ -1370,7 +1369,7 @@ Function28926:
 .b_button
 	pop af
 	ld [wMenuCursorY], a
-	call Call_LoadTempTileMapToTileMap
+	call SafeLoadTempTilemapToTilemap
 	jp LinkTrade_PlayerPartyMenu
 
 .d_right
@@ -1408,7 +1407,7 @@ Function28926:
 	ld [wInitListType], a
 	callfar InitList
 	farcall LinkMonStatsScreen
-	call Call_LoadTempTileMapToTileMap
+	call SafeLoadTempTilemapToTilemap
 	hlcoord 6, 1
 	lb bc, 6, 1
 	ld a, " "
@@ -1446,7 +1445,7 @@ Function28926:
 	ld c, 18
 	call LinkTextboxAtHL
 	farcall Link_WaitBGMap
-	ld hl, .Text_CantTradeLastMon
+	ld hl, .LinkTradeCantBattleText
 	bccoord 1, 14
 	call PlaceHLTextAtBC
 	jr .cancel_trade
@@ -1468,7 +1467,7 @@ Function28926:
 	ld c, 18
 	call LinkTextboxAtHL
 	farcall Link_WaitBGMap
-	ld hl, .Text_Abnormal
+	ld hl, .LinkAbnormalMonText
 	bccoord 1, 14
 	call PlaceHLTextAtBC
 
@@ -1487,18 +1486,16 @@ Function28926:
 	call DelayFrames
 	jp InitTradeMenuDisplay
 
-.Text_CantTradeLastMon:
-	; If you trade that #MON, you won't be able to battle.
-	text_far UnknownText_0x1c41b1
-	db "@"
+.LinkTradeCantBattleText:
+	text_far _LinkTradeCantBattleText
+	text_end
 
 .String_Stats_Trade:
 	db "STATS     TRADE@"
 
-.Text_Abnormal:
-	; Your friend's @  appears to be abnormal!
-	text_far UnknownText_0x1c41e6
-	db "@"
+.LinkAbnormalMonText:
+	text_far _LinkAbnormalMonText
+	text_end
 
 Function28ac9:
 	ld a, [wMenuCursorY]
@@ -1558,9 +1555,9 @@ Function28b22:
 	xor a
 	ldh [rSB], a
 	ldh [hSerialSend], a
-	ld a, (0 << rSC_ON) | 1
+	ld a, (0 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 1
+	ld a, (1 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
 	ret
 
@@ -1633,7 +1630,7 @@ LinkTrade:
 	ld a, [hl]
 	ld [wNamedObjectIndexBuffer], a
 	call GetPokemonName
-	ld hl, UnknownText_0x28eb8
+	ld hl, LinkAskTradeForText
 	bccoord 1, 14
 	call PlaceHLTextAtBC
 	call LoadStandardMenuHeader
@@ -1847,7 +1844,7 @@ LinkTrade:
 	ld [wd003], a
 	ld c, 100
 	call DelayFrames
-	call ClearTileMap
+	call ClearTilemap
 	call LoadFontsBattleExtra
 	ld b, SCGB_DIPLOMA
 	call GetSGBLayout
@@ -1948,10 +1945,9 @@ String28eab:
 	db   "TRADE"
 	next "CANCEL@"
 
-UnknownText_0x28eb8:
-	; Trade @ for @ ?
-	text_far UnknownText_0x1c4212
-	db "@"
+LinkAskTradeForText:
+	text_far _LinkAskTradeForText
+	text_end
 
 String28ebd:
 	db   "Trade completed!@"
@@ -2092,7 +2088,7 @@ EnterTimeCapsule:
 	call DelayFrames
 	xor a
 	ldh [hVBlank], a
-	inc a
+	inc a ; LINK_TIMECAPSULE
 	ld [wLinkMode], a
 	ret
 
@@ -2104,18 +2100,18 @@ WaitForOtherPlayerToExit:
 	xor a
 	ldh [rSB], a
 	ldh [hSerialReceive], a
-	ld a, (0 << rSC_ON) | 1
+	ld a, (0 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 1
+	ld a, (1 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
 	ld c, 3
 	call DelayFrames
 	xor a
 	ldh [rSB], a
 	ldh [hSerialReceive], a
-	ld a, (0 << rSC_ON) | 0
+	ld a, (0 << rSC_ON) | (0 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 0
+	ld a, (1 << rSC_ON) | (0 << rSC_CLOCK)
 	ldh [rSC], a
 	ld c, 3
 	call DelayFrames
@@ -2131,7 +2127,7 @@ WaitForOtherPlayerToExit:
 	push af
 	xor a
 	ldh [rIF], a
-	ld a, $f
+	ld a, IE_DEFAULT
 	ldh [rIE], a
 	pop af
 	ldh [rIF], a
@@ -2160,9 +2156,9 @@ SetBitsForTimeCapsuleRequest:
 	ldh [rSB], a
 	xor a
 	ldh [hSerialReceive], a
-	ld a, (0 << rSC_ON) | 0
+	ld a, (0 << rSC_ON) | (0 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 0
+	ld a, (1 << rSC_ON) | (0 << rSC_CLOCK)
 	ldh [rSC], a
 	xor a ; LINK_TIMECAPSULE - 1
 	ld [wPlayerLinkAction], a
@@ -2177,9 +2173,9 @@ WaitForLinkedFriend:
 	ldh [rSB], a
 	xor a
 	ldh [hSerialReceive], a
-	ld a, (0 << rSC_ON) | 0
+	ld a, (0 << rSC_ON) | (0 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 0
+	ld a, (1 << rSC_ON) | (0 << rSC_CLOCK)
 	ldh [rSC], a
 	call DelayFrame
 	call DelayFrame
@@ -2202,9 +2198,9 @@ WaitForLinkedFriend:
 	ldh [rSB], a
 	xor a
 	ldh [hSerialReceive], a
-	ld a, (0 << rSC_ON) | 0
+	ld a, (0 << rSC_ON) | (0 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 0
+	ld a, (1 << rSC_ON) | (0 << rSC_CLOCK)
 	ldh [rSC], a
 	ld a, [wLinkTimeoutFrames]
 	dec a
@@ -2218,9 +2214,9 @@ WaitForLinkedFriend:
 .not_done
 	ld a, $1
 	ldh [rSB], a
-	ld a, (0 << rSC_ON) | 1
+	ld a, (0 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
-	ld a, (1 << rSC_ON) | 1
+	ld a, (1 << rSC_ON) | (1 << rSC_CLOCK)
 	ldh [rSC], a
 	call DelayFrame
 	jr .loop

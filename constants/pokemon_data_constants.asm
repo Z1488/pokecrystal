@@ -19,7 +19,8 @@ BASE_UNKNOWN_1   EQUS "(wBaseUnknown1 - wCurBaseData)"
 BASE_EGG_STEPS   EQUS "(wBaseEggSteps - wCurBaseData)"
 BASE_UNKNOWN_2   EQUS "(wBaseUnknown2 - wCurBaseData)"
 BASE_PIC_SIZE    EQUS "(wBasePicSize - wCurBaseData)"
-BASE_PADDING     EQUS "(wBasePadding - wCurBaseData)"
+BASE_FRONTPIC    EQUS "(wBaseUnusedFrontpic - wCurBaseData)"
+BASE_BACKPIC     EQUS "(wBaseUnusedBackpic - wCurBaseData)"
 BASE_GROWTH_RATE EQUS "(wBaseGrowthRate - wCurBaseData)"
 BASE_EGG_GROUPS  EQUS "(wBaseEggGroups - wCurBaseData)"
 BASE_TMHM        EQUS "(wBaseTMHM - wCurBaseData)"
@@ -97,6 +98,8 @@ MON_SAT                EQUS "(wPartyMon1SpclAtk - wPartyMon1)"
 MON_SDF                EQUS "(wPartyMon1SpclDef - wPartyMon1)"
 BOXMON_STRUCT_LENGTH   EQUS "(wPartyMon1End - wPartyMon1)"
 PARTYMON_STRUCT_LENGTH EQUS "(wPartyMon1StatsEnd - wPartyMon1)"
+
+NICKNAMED_MON_STRUCT_LENGTH EQUS "(PARTYMON_STRUCT_LENGTH + MON_NAME_LENGTH)"
 REDMON_STRUCT_LENGTH EQU 44
 
 ; caught data
@@ -121,9 +124,9 @@ MONS_PER_BOX EQU 20
 NUM_BOXES    EQU 14
 
 ; hall of fame
-HOF_MON_LENGTH = 1 + 2 + 2 + 1 + (MON_NAME_LENGTH + -1) ; species, id, dvs, level, nick
-HOF_LENGTH = 1 + HOF_MON_LENGTH * PARTY_LENGTH + 1 ; win count, party, terminator
-NUM_HOF_TEAMS = 30
+HOF_MON_LENGTH EQU 1 + 2 + 2 + 1 + (MON_NAME_LENGTH + -1) ; species, id, dvs, level, nick
+HOF_LENGTH EQU 1 + HOF_MON_LENGTH * PARTY_LENGTH + 1 ; win count, party, terminator
+NUM_HOF_TEAMS EQU 30
 
 ; evolution types (used in data/pokemon/evos_attacks.asm)
 	const_def 1
@@ -150,8 +153,8 @@ NUM_HOF_TEAMS = 30
 NUM_GRASSMON EQU 7 ; data/wild/*_grass.asm table size
 NUM_WATERMON EQU 3 ; data/wild/*_water.asm table size
 
-GRASS_WILDDATA_LENGTH EQU (NUM_GRASSMON * 2 + 1) * 3 + 2
-WATER_WILDDATA_LENGTH EQU (NUM_WATERMON * 2 + 1) * 1 + 2
+GRASS_WILDDATA_LENGTH EQU 2 + (1 + NUM_GRASSMON * 2) * 3
+WATER_WILDDATA_LENGTH EQU 2 + (1 + NUM_WATERMON * 2) * 1
 FISHGROUP_DATA_LENGTH EQU 1 + 2 * 3
 
 NUM_ROAMMON_MAPS EQU 16 ; RoamMaps table size (see data/wild/roammon_maps.asm)
@@ -185,12 +188,12 @@ const_value = 1
 	const HAPPINESS_FAINTED           ; 06
 	const HAPPINESS_POISONFAINT       ; 07
 	const HAPPINESS_BEATENBYSTRONGFOE ; 08
-	const HAPPINESS_YOUNGCUT1         ; 09
-	const HAPPINESS_YOUNGCUT2         ; 0a
-	const HAPPINESS_YOUNGCUT3         ; 0b
-	const HAPPINESS_OLDERCUT1         ; 0c
-	const HAPPINESS_OLDERCUT2         ; 0d
-	const HAPPINESS_OLDERCUT3         ; 0e
+	const HAPPINESS_OLDERCUT1         ; 09
+	const HAPPINESS_OLDERCUT2         ; 0a
+	const HAPPINESS_OLDERCUT3         ; 0b
+	const HAPPINESS_YOUNGCUT1         ; 0c
+	const HAPPINESS_YOUNGCUT2         ; 0d
+	const HAPPINESS_YOUNGCUT3         ; 0e
 	const HAPPINESS_BITTERPOWDER      ; 0f
 	const HAPPINESS_ENERGYROOT        ; 10
 	const HAPPINESS_REVIVALHERB       ; 11

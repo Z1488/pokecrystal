@@ -6,7 +6,8 @@ BATTLETRANSITION_NO_CAVE_STRONGER EQU $18
 BATTLETRANSITION_FINISH           EQU $20
 BATTLETRANSITION_END              EQU $80
 
-BATTLETRANSITION_SQUARE EQUS "\"8\"" ; $fe
+BATTLETRANSITION_SQUARE EQU "8" ; $fe
+BATTLETRANSITION_BLACK  EQU "9" ; $ff
 
 DoBattleTransition:
 	call .InitGFX
@@ -138,7 +139,7 @@ ConvertTrainerBattlePokeballTilesTo2bpp:
 
 	pop hl
 	ld de, wDecompressScratch
-	ld b, BANK(ConvertTrainerBattlePokeballTilesTo2bpp) ; BANK(@)
+	ld b, BANK(@)
 	ld c, $28
 	call Request2bpp
 	pop af
@@ -463,7 +464,7 @@ ENDM
 	ld c, a
 	inc de
 .loop1
-	ld [hl], $ff
+	ld [hl], BATTLETRANSITION_BLACK
 	ld a, [wcf65]
 	bit RIGHT_QUADRANT_F, a
 	jr z, .leftside
@@ -572,9 +573,9 @@ StartTrainerBattle_SpeckleToBlack:
 ; If the tile has already been blacked out,
 ; sample a new tile
 	ld a, [hl]
-	cp $ff
+	cp BATTLETRANSITION_BLACK
 	jr z, .y_loop
-	ld [hl], $ff
+	ld [hl], BATTLETRANSITION_BLACK
 	ret
 
 StartTrainerBattle_LoadPokeBallGraphics:
@@ -584,7 +585,7 @@ StartTrainerBattle_LoadPokeBallGraphics:
 
 	xor a
 	ldh [hBGMapMode], a
-	hlcoord 0, 0, wAttrMap
+	hlcoord 0, 0, wAttrmap
 	ld bc, SCREEN_HEIGHT * SCREEN_WIDTH
 	inc b
 	inc c
@@ -809,7 +810,7 @@ ENDM
 	db -1
 
 .Copy:
-	ld a, $ff
+	ld a, BATTLETRANSITION_BLACK
 .row
 	push bc
 	push hl

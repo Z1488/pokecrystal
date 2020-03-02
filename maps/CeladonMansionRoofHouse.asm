@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const CELADONMANSIONROOFHOUSE_PHARMACIST
 
 CeladonMansionRoofHouse_MapScripts:
@@ -12,7 +12,7 @@ CeladonMansionRoofHousePharmacistScript:
 	checkevent EVENT_GOT_TM03_CURSE
 	iftrue .GotCurse
 	writetext CeladonMansionRoofHousePharmacistIntroText
-	buttonsound
+	promptbutton
 	checktime NITE
 	iftrue .Night
 	writetext CeladonMansionRoofHousePharmacistNotNightText
@@ -22,7 +22,7 @@ CeladonMansionRoofHousePharmacistScript:
 
 .Night:
 	writetext CeladonMansionRoofHousePharmacistStoryText
-	buttonsound
+	promptbutton
 	verbosegiveitem TM_CURSE
 	iffalse .NoRoom
 	setevent EVENT_GOT_TM03_CURSE

@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const CHARCOALKILN_BLACK_BELT
 	const CHARCOALKILN_YOUNGSTER
 	const CHARCOALKILN_MOLTRES
@@ -46,7 +46,7 @@ CharcoalKilnApprentice:
 
 .Thanks:
 	writetext CharcoalKilnApprenticeText2
-	buttonsound
+	promptbutton
 	verbosegiveitem CHARCOAL
 	iffalse .Done
 	setevent EVENT_GOT_CHARCOAL_IN_CHARCOAL_KILN

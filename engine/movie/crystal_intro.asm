@@ -2,7 +2,7 @@ Copyright_GFPresents:
 	ld de, MUSIC_NONE
 	call PlayMusic
 	call ClearBGPalettes
-	call ClearTileMap
+	call ClearTilemap
 	ld a, HIGH(vBGMap0)
 	ldh [hBGMapAddress + 1], a
 	xor a ; LOW(vBGMap0)
@@ -22,7 +22,7 @@ Copyright_GFPresents:
 	call WaitBGMap
 	ld c, 100
 	call DelayFrames
-	call ClearTileMap
+	call ClearTilemap
 	farcall GBCOnlyScreen
 	call .GetGFLogoGFX
 .joy_loop
@@ -80,7 +80,7 @@ Copyright_GFPresents:
 	farcall ClearSpriteAnims
 	depixel 10, 11, 4, 0
 	ld a, SPRITE_ANIM_INDEX_GAMEFREAK_LOGO
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_YOFFSET
 	add hl, bc
 	ld [hl], $a0
@@ -106,7 +106,7 @@ Copyright_GFPresents:
 
 .StopGamefreakAnim:
 	farcall ClearSpriteAnims
-	call ClearTileMap
+	call ClearTilemap
 	call ClearSprites
 	ld c, 16
 	call DelayFrames
@@ -363,7 +363,7 @@ CrystalIntro:
 .done
 	call ClearBGPalettes
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hSCX], a
 	ldh [hSCY], a
@@ -440,12 +440,12 @@ IntroScene1:
 ; Setup the next scene.
 	call Intro_ClearBGPals
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hBGMapMode], a
 	ld a, $1
 	ldh [rVBK], a
-	ld hl, IntroTilemap001
+	ld hl, IntroUnownAAttrmap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ld a, $0
@@ -456,18 +456,18 @@ IntroScene1:
 	ld hl, IntroPulseGFX
 	ld de, vTiles0 tile $00
 	call Intro_DecompressRequest2bpp_128Tiles
-	ld hl, IntroTilemap002
+	ld hl, IntroUnownATilemap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBGPals1)
 	ldh [rSVBK], a
-	ld hl, IntroPalette2
+	ld hl, IntroUnownsPalette
 	ld de, wBGPals1
 	ld bc, 16 palettes
 	call CopyBytes
-	ld hl, IntroPalette2
+	ld hl, IntroUnownsPalette
 	ld de, wBGPals2
 	ld bc, 16 palettes
 	call CopyBytes
@@ -516,12 +516,12 @@ IntroScene3:
 ; More setup. Transition to the outdoor scene.
 	call Intro_ClearBGPals
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hBGMapMode], a
 	ld a, $1
 	ldh [rVBK], a
-	ld hl, IntroTilemap003
+	ld hl, IntroBackgroundAttrmap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ld a, $0
@@ -529,18 +529,18 @@ IntroScene3:
 	ld hl, IntroBackgroundGFX
 	ld de, vTiles2 tile $00
 	call Intro_DecompressRequest2bpp_128Tiles
-	ld hl, IntroTilemap004
+	ld hl, IntroBackgroundTilemap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBGPals1)
 	ldh [rSVBK], a
-	ld hl, IntroPalette1
+	ld hl, IntroBackgroundPalette
 	ld de, wBGPals1
 	ld bc, 16 palettes
 	call CopyBytes
-	ld hl, IntroPalette1
+	ld hl, IntroBackgroundPalette
 	ld de, wBGPals2
 	ld bc, 16 palettes
 	call CopyBytes
@@ -578,13 +578,13 @@ IntroScene5:
 ; Go back to the Unown.
 	call Intro_ClearBGPals
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hBGMapMode], a
 	ldh [hLCDCPointer], a
 	ld a, $1
 	ldh [rVBK], a
-	ld hl, IntroTilemap005
+	ld hl, IntroUnownHIAttrmap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ld a, $0
@@ -595,18 +595,18 @@ IntroScene5:
 	ld hl, IntroPulseGFX
 	ld de, vTiles0 tile $00
 	call Intro_DecompressRequest2bpp_128Tiles
-	ld hl, IntroTilemap006
+	ld hl, IntroUnownHITilemap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBGPals1)
 	ldh [rSVBK], a
-	ld hl, IntroPalette2
+	ld hl, IntroUnownsPalette
 	ld de, wBGPals1
 	ld bc, 16 palettes
 	call CopyBytes
-	ld hl, IntroPalette2
+	ld hl, IntroUnownsPalette
 	ld de, wBGPals2
 	ld bc, 16 palettes
 	call CopyBytes
@@ -676,13 +676,13 @@ IntroScene7:
 ; Back to the outdoor scene.
 	call Intro_ClearBGPals
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hBGMapMode], a
 
 	ld a, $1
 	ldh [rVBK], a
-	ld hl, IntroTilemap003
+	ld hl, IntroBackgroundAttrmap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 
@@ -700,7 +700,7 @@ IntroScene7:
 	ld de, vTiles2 tile $00
 	call Intro_DecompressRequest2bpp_128Tiles
 
-	ld hl, IntroTilemap004
+	ld hl, IntroBackgroundTilemap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 
@@ -709,12 +709,12 @@ IntroScene7:
 	ld a, BANK(wBGPals1)
 	ldh [rSVBK], a
 
-	ld hl, IntroPalette1
+	ld hl, IntroBackgroundPalette
 	ld de, wBGPals1
 	ld bc, 16 palettes
 	call CopyBytes
 
-	ld hl, IntroPalette1
+	ld hl, IntroBackgroundPalette
 	ld de, wBGPals2
 	ld bc, 16 palettes
 	call CopyBytes
@@ -733,7 +733,7 @@ IntroScene7:
 	farcall ClearSpriteAnims
 	depixel 13, 27, 4, 0
 	ld a, SPRITE_ANIM_INDEX_INTRO_SUICUNE
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld a, $f0
 	ld [wGlobalAnimXOffset], a
 	call Intro_SetCGBPalUpdate
@@ -777,7 +777,7 @@ IntroScene9:
 	xor a
 	ldh [hLCDCPointer], a
 	call ClearSprites
-	hlcoord 0, 0, wAttrMap
+	hlcoord 0, 0, wAttrmap
 	; first 12 rows have palette 1
 	ld bc, 12 * SCREEN_WIDTH
 	ld a, $1
@@ -826,7 +826,7 @@ IntroScene10:
 .pichu
 	depixel 21, 16, 1, 0
 	ld a, SPRITE_ANIM_INDEX_INTRO_PICHU
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld de, SFX_INTRO_PICHU
 	call PlaySFX
 	ret
@@ -834,7 +834,7 @@ IntroScene10:
 .wooper
 	depixel 22, 6
 	ld a, SPRITE_ANIM_INDEX_INTRO_WOOPER
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld de, SFX_INTRO_PICHU
 	call PlaySFX
 	ret
@@ -846,13 +846,13 @@ IntroScene11:
 ; Back to Unown again.
 	call Intro_ClearBGPals
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hBGMapMode], a
 	ldh [hLCDCPointer], a
 	ld a, $1
 	ldh [rVBK], a
-	ld hl, IntroTilemap007
+	ld hl, IntroUnownsAttrmap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ld a, $0
@@ -860,18 +860,18 @@ IntroScene11:
 	ld hl, IntroUnownsGFX
 	ld de, vTiles2 tile $00
 	call Intro_DecompressRequest2bpp_128Tiles
-	ld hl, IntroTilemap008
+	ld hl, IntroUnownsTilemap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBGPals1)
 	ldh [rSVBK], a
-	ld hl, IntroPalette2
+	ld hl, IntroUnownsPalette
 	ld de, wBGPals1
 	ld bc, 16 palettes
 	call CopyBytes
-	ld hl, IntroPalette2
+	ld hl, IntroUnownsPalette
 	ld de, wBGPals2
 	ld bc, 16 palettes
 	call CopyBytes
@@ -970,12 +970,12 @@ IntroScene13:
 ; Switch scenes again.
 	call Intro_ClearBGPals
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hBGMapMode], a
 	ld a, $1
 	ldh [rVBK], a
-	ld hl, IntroTilemap003
+	ld hl, IntroBackgroundAttrmap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ld a, $0
@@ -986,18 +986,18 @@ IntroScene13:
 	ld hl, IntroBackgroundGFX
 	ld de, vTiles2 tile $00
 	call Intro_DecompressRequest2bpp_128Tiles
-	ld hl, IntroTilemap004
+	ld hl, IntroBackgroundTilemap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBGPals1)
 	ldh [rSVBK], a
-	ld hl, IntroPalette1
+	ld hl, IntroBackgroundPalette
 	ld de, wBGPals1
 	ld bc, 16 palettes
 	call CopyBytes
-	ld hl, IntroPalette1
+	ld hl, IntroBackgroundPalette
 	ld de, wBGPals2
 	ld bc, 16 palettes
 	call CopyBytes
@@ -1013,7 +1013,7 @@ IntroScene13:
 	farcall ClearSpriteAnims
 	depixel 13, 11, 4, 0
 	ld a, SPRITE_ANIM_INDEX_INTRO_SUICUNE
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld de, MUSIC_CRYSTAL_OPENING
 	call PlayMusic
 	xor a
@@ -1074,12 +1074,12 @@ IntroScene15:
 ; Transition to a new scene.
 	call Intro_ClearBGPals
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hBGMapMode], a
 	ld a, $1
 	ldh [rVBK], a
-	ld hl, IntroTilemap009
+	ld hl, IntroSuicuneJumpAttrmap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ld a, $0
@@ -1094,7 +1094,7 @@ IntroScene15:
 	ld hl, vTiles1 tile $00
 	lb bc, BANK(IntroGrass4GFX), 1
 	call Request2bpp
-	ld hl, IntroTilemap010
+	ld hl, IntroSuicuneJumpTilemap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	call Intro_LoadTilemap
@@ -1102,11 +1102,11 @@ IntroScene15:
 	push af
 	ld a, BANK(wBGPals1)
 	ldh [rSVBK], a
-	ld hl, IntroPalette5
+	ld hl, IntroSuicunePalette
 	ld de, wBGPals1
 	ld bc, 16 palettes
 	call CopyBytes
-	ld hl, IntroPalette5
+	ld hl, IntroSuicunePalette
 	ld de, wBGPals2
 	ld bc, 16 palettes
 	call CopyBytes
@@ -1124,10 +1124,10 @@ IntroScene15:
 	call Intro_SetCGBPalUpdate
 	depixel 8, 5
 	ld a, SPRITE_ANIM_INDEX_INTRO_UNOWN_F
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	depixel 12, 0
 	ld a, SPRITE_ANIM_INDEX_INTRO_SUICUNE_AWAY
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	xor a
 	ld [wIntroSceneFrameCounter], a
 	ld [wIntroSceneTimer], a
@@ -1156,12 +1156,12 @@ IntroScene17:
 ; ...
 	call Intro_ClearBGPals
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hBGMapMode], a
 	ld a, $1
 	ldh [rVBK], a
-	ld hl, IntroTilemap011
+	ld hl, IntroSuicuneCloseAttrmap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ld a, $0
@@ -1169,18 +1169,18 @@ IntroScene17:
 	ld hl, IntroSuicuneCloseGFX
 	ld de, vTiles1 tile $00
 	call Intro_DecompressRequest2bpp_255Tiles
-	ld hl, IntroTilemap012
+	ld hl, IntroSuicuneCloseTilemap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBGPals1)
 	ldh [rSVBK], a
-	ld hl, IntroPalette4
+	ld hl, IntroSuicuneClosePalette
 	ld de, wBGPals1
 	ld bc, 16 palettes
 	call CopyBytes
-	ld hl, IntroPalette4
+	ld hl, IntroSuicuneClosePalette
 	ld de, wBGPals2
 	ld bc, 16 palettes
 	call CopyBytes
@@ -1222,12 +1222,12 @@ IntroScene19:
 ; More setup.
 	call Intro_ClearBGPals
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hBGMapMode], a
 	ld a, $1
 	ldh [rVBK], a
-	ld hl, IntroTilemap013
+	ld hl, IntroSuicuneBackAttrmap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ld a, $0
@@ -1242,7 +1242,7 @@ IntroScene19:
 	ld hl, vTiles1 tile $7f
 	lb bc, BANK(IntroGrass4GFX), 1
 	call Request2bpp
-	ld hl, IntroTilemap014
+	ld hl, IntroSuicuneBackTilemap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	call Intro_LoadTilemap
@@ -1250,11 +1250,11 @@ IntroScene19:
 	push af
 	ld a, BANK(wBGPals1)
 	ldh [rSVBK], a
-	ld hl, IntroPalette5
+	ld hl, IntroSuicunePalette
 	ld de, wBGPals1
 	ld bc, 16 palettes
 	call CopyBytes
-	ld hl, IntroPalette5
+	ld hl, IntroSuicunePalette
 	ld de, wBGPals2
 	ld bc, 16 palettes
 	call CopyBytes
@@ -1276,7 +1276,7 @@ IntroScene19:
 	call Intro_SetCGBPalUpdate
 	depixel 12, 0
 	ld a, SPRITE_ANIM_INDEX_INTRO_SUICUNE_AWAY
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	xor a
 	ld [wIntroSceneFrameCounter], a
 	ld [wIntroSceneTimer], a
@@ -1399,12 +1399,12 @@ IntroScene26:
 ; Load the final scene.
 	call ClearBGPalettes
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	xor a
 	ldh [hBGMapMode], a
 	ld a, $1
 	ldh [rVBK], a
-	ld hl, IntroTilemap015
+	ld hl, IntroCrystalUnownsAttrmap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ld a, $0
@@ -1412,18 +1412,18 @@ IntroScene26:
 	ld hl, IntroCrystalUnownsGFX
 	ld de, vTiles2 tile $00
 	call Intro_DecompressRequest2bpp_128Tiles
-	ld hl, IntroTilemap017
+	ld hl, IntroCrystalUnownsTilemap
 	debgcoord 0, 0
 	call Intro_DecompressRequest2bpp_64Tiles
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBGPals1)
 	ldh [rSVBK], a
-	ld hl, IntroPalette3
+	ld hl, IntroCrystalUnownsPalette
 	ld de, wBGPals1
 	ld bc, 16 palettes
 	call CopyBytes
-	ld hl, IntroPalette3
+	ld hl, IntroCrystalUnownsPalette
 	ld de, wBGPals2
 	ld bc, 16 palettes
 	call CopyBytes
@@ -1533,7 +1533,7 @@ INCLUDE "gfx/intro/fade.pal"
 CrystalIntro_InitUnownAnim:
 	push de
 	ld a, SPRITE_ANIM_INDEX_INTRO_UNOWN
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_0C
 	add hl, bc
 	ld [hl], $8
@@ -1543,7 +1543,7 @@ CrystalIntro_InitUnownAnim:
 
 	push de
 	ld a, SPRITE_ANIM_INDEX_INTRO_UNOWN
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_0C
 	add hl, bc
 	ld [hl], $18
@@ -1553,7 +1553,7 @@ CrystalIntro_InitUnownAnim:
 
 	push de
 	ld a, SPRITE_ANIM_INDEX_INTRO_UNOWN
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_0C
 	add hl, bc
 	ld [hl], $28
@@ -1562,7 +1562,7 @@ CrystalIntro_InitUnownAnim:
 	pop de
 
 	ld a, SPRITE_ANIM_INDEX_INTRO_UNOWN
-	call _InitSpriteAnimStruct
+	call InitSpriteAnimStruct
 	ld hl, SPRITEANIMSTRUCT_0C
 	add hl, bc
 	ld [hl], $38
@@ -2038,14 +2038,14 @@ INCBIN "gfx/intro/pichu_wooper.2bpp.lz"
 IntroBackgroundGFX:
 INCBIN "gfx/intro/background.2bpp.lz"
 
-IntroTilemap004:
-INCBIN "gfx/intro/004.tilemap.lz"
+IntroBackgroundTilemap:
+INCBIN "gfx/intro/background.tilemap.lz"
 
-IntroTilemap003:
-INCBIN "gfx/intro/003.tilemap.lz"
+IntroBackgroundAttrmap:
+INCBIN "gfx/intro/background.attrmap.lz"
 
-IntroPalette1:
-INCLUDE "gfx/intro/intro_1.pal"
+IntroBackgroundPalette:
+INCLUDE "gfx/intro/background.pal"
 
 IntroUnownsGFX:
 INCBIN "gfx/intro/unowns.2bpp.lz"
@@ -2053,50 +2053,50 @@ INCBIN "gfx/intro/unowns.2bpp.lz"
 IntroPulseGFX:
 INCBIN "gfx/intro/pulse.2bpp.lz"
 
-IntroTilemap002:
-INCBIN "gfx/intro/002.tilemap.lz"
+IntroUnownATilemap:
+INCBIN "gfx/intro/unown_a.tilemap.lz"
 
-IntroTilemap001:
-INCBIN "gfx/intro/001.tilemap.lz"
+IntroUnownAAttrmap:
+INCBIN "gfx/intro/unown_a.attrmap.lz"
 
-IntroTilemap006:
-INCBIN "gfx/intro/006.tilemap.lz"
+IntroUnownHITilemap:
+INCBIN "gfx/intro/unown_hi.tilemap.lz"
 
-IntroTilemap005:
-INCBIN "gfx/intro/005.tilemap.lz"
+IntroUnownHIAttrmap:
+INCBIN "gfx/intro/unown_hi.attrmap.lz"
 
-IntroTilemap008:
-INCBIN "gfx/intro/008.tilemap.lz"
+IntroUnownsTilemap:
+INCBIN "gfx/intro/unowns.tilemap.lz"
 
-IntroTilemap007:
-INCBIN "gfx/intro/007.tilemap.lz"
+IntroUnownsAttrmap:
+INCBIN "gfx/intro/unowns.attrmap.lz"
 
-IntroPalette2:
-INCLUDE "gfx/intro/intro_2.pal"
+IntroUnownsPalette:
+INCLUDE "gfx/intro/unowns.pal"
 
 IntroCrystalUnownsGFX:
 INCBIN "gfx/intro/crystal_unowns.2bpp.lz"
 
-IntroTilemap017:
-INCBIN "gfx/intro/017.tilemap.lz"
+IntroCrystalUnownsTilemap:
+INCBIN "gfx/intro/crystal_unowns.tilemap.lz"
 
-IntroTilemap015:
-INCBIN "gfx/intro/015.tilemap.lz"
+IntroCrystalUnownsAttrmap:
+INCBIN "gfx/intro/crystal_unowns.attrmap.lz"
 
-IntroPalette3:
-INCLUDE "gfx/intro/intro_3.pal"
+IntroCrystalUnownsPalette:
+INCLUDE "gfx/intro/crystal_unowns.pal"
 
 IntroSuicuneCloseGFX:
 INCBIN "gfx/intro/suicune_close.2bpp.lz"
 
-IntroTilemap012:
-INCBIN "gfx/intro/012.tilemap.lz"
+IntroSuicuneCloseTilemap:
+INCBIN "gfx/intro/suicune_close.tilemap.lz"
 
-IntroTilemap011:
-INCBIN "gfx/intro/011.tilemap.lz"
+IntroSuicuneCloseAttrmap:
+INCBIN "gfx/intro/suicune_close.attrmap.lz"
 
-IntroPalette4:
-INCLUDE "gfx/intro/intro_4.pal"
+IntroSuicuneClosePalette:
+INCLUDE "gfx/intro/suicune_close.pal"
 
 IntroSuicuneJumpGFX:
 INCBIN "gfx/intro/suicune_jump.2bpp.lz"
@@ -2104,20 +2104,20 @@ INCBIN "gfx/intro/suicune_jump.2bpp.lz"
 IntroSuicuneBackGFX:
 INCBIN "gfx/intro/suicune_back.2bpp.lz"
 
-IntroTilemap010:
-INCBIN "gfx/intro/010.tilemap.lz"
+IntroSuicuneJumpTilemap:
+INCBIN "gfx/intro/suicune_jump.tilemap.lz"
 
-IntroTilemap009:
-INCBIN "gfx/intro/009.tilemap.lz"
+IntroSuicuneJumpAttrmap:
+INCBIN "gfx/intro/suicune_jump.attrmap.lz"
 
-IntroTilemap014:
-INCBIN "gfx/intro/014.tilemap.lz"
+IntroSuicuneBackTilemap:
+INCBIN "gfx/intro/suicune_back.tilemap.lz"
 
-IntroTilemap013:
-INCBIN "gfx/intro/013.tilemap.lz"
+IntroSuicuneBackAttrmap:
+INCBIN "gfx/intro/suicune_back.attrmap.lz"
 
-IntroPalette5:
-INCLUDE "gfx/intro/intro_5.pal"
+IntroSuicunePalette:
+INCLUDE "gfx/intro/suicune.pal"
 
 IntroUnownBackGFX:
 INCBIN "gfx/intro/unown_back.2bpp.lz"

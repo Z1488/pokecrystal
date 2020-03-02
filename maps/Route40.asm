@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const ROUTE40_OLIVINE_RIVAL1
 	const ROUTE40_OLIVINE_RIVAL2
 	const ROUTE40_SWIMMER_GIRL1
@@ -20,7 +20,7 @@ Route40_MapScripts:
 
 .MonicaCallback:
 	clearevent EVENT_BATTLE_TOWER_OUTSIDE_SAILOR
-	checkcode VAR_WEEKDAY
+	readvar VAR_WEEKDAY
 	ifequal MONDAY, .MonicaAppears
 	disappear ROUTE40_MONICA
 	return
@@ -95,16 +95,16 @@ MonicaScript:
 	opentext
 	checkevent EVENT_GOT_SHARP_BEAK_FROM_MONICA
 	iftrue .Monday
-	checkcode VAR_WEEKDAY
+	readvar VAR_WEEKDAY
 	ifnotequal MONDAY, .NotMonday
 	checkevent EVENT_MET_MONICA_OF_MONDAY
 	iftrue .MetMonica
 	writetext MeetMonicaText
-	buttonsound
+	promptbutton
 	setevent EVENT_MET_MONICA_OF_MONDAY
 .MetMonica:
 	writetext MonicaGivesGiftText
-	buttonsound
+	promptbutton
 	verbosegiveitem SHARP_BEAK
 	iffalse .done
 	setevent EVENT_GOT_SHARP_BEAK_FROM_MONICA

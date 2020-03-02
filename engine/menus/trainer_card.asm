@@ -41,7 +41,7 @@ TrainerCard:
 .InitRAM:
 	call ClearBGPalettes
 	call ClearSprites
-	call ClearTileMap
+	call ClearTilemap
 	call DisableLCD
 
 	farcall GetCardPic
@@ -294,7 +294,9 @@ TrainerCard_Page1_PrintDexCaught_GameTime:
 
 .Dex_PlayTime:
 	db   "#DEX"
-	next "PLAY TIME@@"
+	next "PLAY TIME@"
+
+	db "@" ; unused
 
 .Badges:
 	db "  BADGES▶@"

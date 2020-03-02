@@ -1,4 +1,4 @@
-	const_def 2 ; object constants
+	object_const_def ; object_event constants
 	const GOLDENRODHAPPINESSRATER_TEACHER
 	const GOLDENRODHAPPINESSRATER_POKEFAN_M
 	const GOLDENRODHAPPINESSRATER_TWIN
@@ -13,13 +13,13 @@ GoldenrodHappinessRaterTeacherScript:
 	opentext
 	special GetFirstPokemonHappiness
 	writetext GoldenrodHappinessRaterTeacherText
-	buttonsound
+	promptbutton
 	ifgreater 250 - 1, .LovesYouALot
 	ifgreater 200 - 1, .ReallyTrustsYou
 	ifgreater 150 - 1, .SortOfHappy
 	ifgreater 100 - 1, .QuiteCute
 	ifgreater  50 - 1, .NotUsedToYou
-	jump .LooksMean
+	sjump .LooksMean
 
 .LovesYouALot:
 	writetext GoldenrodHappinessRatingText_LovesYouALot
@@ -78,7 +78,7 @@ GoldenrodHappinessRaterTeacherText:
 
 	para "Oh? Let me see"
 	line "your @"
-	text_from_ram wStringBuffer3
+	text_ram wStringBuffer3
 	text "…"
 	done
 

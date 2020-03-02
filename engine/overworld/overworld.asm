@@ -109,7 +109,7 @@ AddIndoorSprites:
 	push af
 	ld a, [hl]
 	call AddSpriteGFX
-	ld de, OBJECT_LENGTH
+	ld de, MAPOBJECT_LENGTH
 	add hl, de
 	pop af
 	inc a
@@ -594,7 +594,7 @@ endr
 	jr c, .done
 
 	ld a, h
-	add $8
+	add HIGH(vTiles1 - vTiles0)
 	ld h, a
 	call .CopyToVram
 

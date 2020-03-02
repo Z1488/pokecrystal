@@ -1,5 +1,5 @@
-GFX_49c0c:
-INCBIN "gfx/unknown/049c0c.2bpp"
+MobileMenuGFX:
+INCBIN "gfx/mobile/mobile_menu.2bpp"
 
 MainMenu:
 	xor a
@@ -18,7 +18,7 @@ MainMenu:
 	call MainMenuJoypadLoop
 	call CloseWindow
 	jr c, .quit
-	call ClearTileMap
+	call ClearTilemap
 	ld a, [wMenuSelection]
 	ld hl, .Jumptable
 	rst JumpTable
@@ -237,11 +237,11 @@ MainMenu_PrintCurrentTimeAndDay:
 	hlcoord 0, 14
 	ld b, 2
 	ld c, 18
-	call TextBox
+	call Textbox
 	ret
 
 .TimeFail:
-	call SpeechTextBox
+	call SpeechTextbox
 	ret
 
 .PlaceTime:
@@ -280,10 +280,9 @@ MainMenu_PrintCurrentTimeAndDay:
 .TimeNotSet:
 	db "TIME NOT SET@"
 
-.UnusedText:
-	; Clock time unknown
-	text_far UnknownText_0x1c5182
-	db "@"
+.MainMenuTimeUnknownText:
+	text_far _MainMenuTimeUnknownText
+	text_end
 
 .PlaceCurrentDay:
 	push de
@@ -314,7 +313,7 @@ MainMenu_PrintCurrentTimeAndDay:
 Function49ed0:
 	xor a
 	ldh [hMapAnims], a
-	call ClearTileMap
+	call ClearTilemap
 	call LoadFontsExtra
 	call LoadStandardFont
 	call ClearWindowData

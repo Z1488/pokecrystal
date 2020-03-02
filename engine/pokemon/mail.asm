@@ -307,11 +307,11 @@ _PlayerMailBoxMenu:
 
 .nomail
 	ld hl, .EmptyMailboxText
-	jp MenuTextBoxBackup
+	jp MenuTextboxBackup
 
 .EmptyMailboxText:
 	text_far _EmptyMailboxText
-	db "@"
+	text_end
 
 InitMail:
 ; initialize wMailboxCount and beyond with incrementing values, one per mail
@@ -428,8 +428,8 @@ MailboxPC:
 	jp CloseSubmenu
 
 .PutInPack:
-	ld hl, .MessageLostText
-	call MenuTextBox
+	ld hl, .MailMessageLostText
+	call MenuTextbox
 	call YesNoBox
 	call ExitMenu
 	ret c
@@ -441,28 +441,28 @@ MailboxPC:
 	ld hl, wNumItems
 	call ReceiveItem
 	jr c, .put_in_bag
-	ld hl, .PackFullText
-	jp MenuTextBoxBackup
+	ld hl, .MailPackFullText
+	jp MenuTextboxBackup
 
 .put_in_bag
 	ld a, [wMenuSelection]
 	dec a
 	ld b, a
 	call DeleteMailFromPC
-	ld hl, .PutAwayText
-	jp MenuTextBoxBackup
+	ld hl, .MailClearedPutAwayText
+	jp MenuTextboxBackup
 
-.PutAwayText:
-	text_far ClearedMailPutAwayText
-	db "@"
+.MailClearedPutAwayText:
+	text_far _MailClearedPutAwayText
+	text_end
 
-.PackFullText:
-	text_far MailPackFullText
-	db "@"
+.MailPackFullText:
+	text_far _MailPackFullText
+	text_end
 
-.MessageLostText:
-	text_far MailMessageLostText
-	db "@"
+.MailMessageLostText:
+	text_far _MailMessageLostText
+	text_end
 
 .GetMailType:
 	push af
@@ -500,12 +500,12 @@ MailboxPC:
 	ld a, [hl]
 	and a
 	jr z, .attach_mail
-	ld hl, .HoldingMailText
+	ld hl, .MailAlreadyHoldingItemText
 	call PrintText
 	jr .try_again
 
 .egg
-	ld hl, .EggText
+	ld hl, .MailEggText
 	call PrintText
 	jr .try_again
 
@@ -514,23 +514,23 @@ MailboxPC:
 	dec a
 	ld b, a
 	call MoveMailFromPCToParty
-	ld hl, .MailMovedText
+	ld hl, .MailMovedFromBoxText
 	call PrintText
 
 .exit2
 	jp CloseSubmenu
 
-.HoldingMailText:
-	text_far MailAlreadyHoldingItemText
-	db "@"
+.MailAlreadyHoldingItemText:
+	text_far _MailAlreadyHoldingItemText
+	text_end
 
-.EggText:
-	text_far MailEggText
-	db "@"
+.MailEggText:
+	text_far _MailEggText
+	text_end
 
-.MailMovedText:
-	text_far MailMovedFromBoxText
-	db "@"
+.MailMovedFromBoxText:
+	text_far _MailMovedFromBoxText
+	text_end
 
 .Cancel:
 	ret
@@ -543,8 +543,8 @@ MailboxPC:
 
 .TopMenuData:
 	db SCROLLINGMENU_DISPLAY_ARROWS ; flags
-	db 4, 0 ; rows/columns?
-	db 1 ; horizontal spacing?
+	db 4, 0 ; rows, columns
+	db SCROLLINGMENU_ITEMS_NORMAL ; item format
 	dbw 0, wMailboxCount ; text pointer
 	dba MailboxPC_PrintMailAuthor
 	dba NULL

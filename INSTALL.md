@@ -34,11 +34,11 @@ Run setup and leave the default settings. At the "**Select Packages**" step, cho
 - `git`
 - `gcc-core`
 
-Click once on the text that says "**Skip**" next to each package to select the most recent version to install.
+Double click on the text that says "**Skip**" next to each package to select the most recent version to install.
 
 Then download [**rgbds**](https://github.com/rednex/rgbds/releases/): the latest **win64.zip** or **win32.zip** release. Extract it and put all the `exe` and `dll` files individually in **C:\cygwin64\usr\local\bin**.
 
-**Note: If you already have an older rgbds, you will need to update to 0.3.7.** Ignore this if you have never installed rgbds before. If a version newer than 0.3.7 does not work, try downloading 0.3.7.
+**Note: If you already have an older rgbds, you will need to update to 0.3.9.** Ignore this if you have never installed rgbds before. If a version newer than 0.3.9 does not work, try downloading 0.3.9.
 
 Now open the **Cygwin terminal** and enter the following commands.
 
@@ -57,19 +57,14 @@ Now you're ready to [build **pokecrystal**](#build-pokecrystal).
 
 ## Mac OS X
 
+Install [**Homebrew**](https://brew.sh/). Follow the official instructions.
+
 Open **Terminal** and enter the following commands.
-
-To install the **Xcode Command Line Tools**:
-
-```bash
-xcode-select --install
-```
 
 To install **rgbds**:
 
 ```bash
-git clone --depth=1 https://github.com/rednex/rgbds
-sudo make -C rgbds CFLAGS=-O2 install
+brew install rgbds
 ```
 
 Now you're ready to [build **pokecrystal**](#build-pokecrystal).
@@ -90,8 +85,8 @@ sudo apt-get install make gcc git
 To install **rgbds**:
 
 ```bash
-sudo apt-get install bison libpng-dev
-git clone --depth=1 https://github.com/rednex/rgbds
+sudo apt-get install pkg-config flex bison libpng-dev
+git clone -b v0.3.9 --depth=1 https://github.com/rednex/rgbds
 sudo make -C rgbds CFLAGS=-O2 install
 ```
 
@@ -106,8 +101,8 @@ sudo zypper install make gcc git
 To install **rgbds**:
 
 ```bash
-sudo zypper install bison libpng16-devel
-git clone --depth=1 https://github.com/rednex/rgbds
+sudo zypper install pkg-config flex bison libpng16-devel
+git clone -b v0.3.9 --depth=1 https://github.com/rednex/rgbds
 sudo make -C rgbds CFLAGS=-O2 install
 ```
 
@@ -119,11 +114,13 @@ To install the software required for **pokecrystal**:
 sudo pacman -S make gcc git
 ```
 
-To install **rgbds**:
+**rgbds** is available on the [AUR](https://aur.archlinux.org/packages/rgbds/).
+
+Alternatively, to install **rgbds** manually:
 
 ```bash
-sudo pacman -S bison libpng
-git clone --depth=1 https://github.com/rednex/rgbds
+sudo pacman -S pkg-config flex bison libpng
+git clone -b v0.3.9 --depth=1 https://github.com/rednex/rgbds
 sudo make -C rgbds CFLAGS=-O2 install
 ```
 
@@ -152,13 +149,15 @@ If your distro is not listed here, try to find the required software in its repo
 
 If `rgbds` is not available, you'll also need these:
 
+- `pkg-config`
+- `flex`
 - `bison`
 - `libpng` (and the development headers)
 
 To install **rgbds**:
 
 ```bash
-git clone --depth=1 https://github.com/rednex/rgbds
+git clone -b v0.3.9 --depth=1 https://github.com/rednex/rgbds
 sudo make -C rgbds CFLAGS=-O2 install
 ```
 

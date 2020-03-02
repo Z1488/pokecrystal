@@ -1,12 +1,12 @@
 Reset::
 	di
-	call MapSetup_Sound_Off
+	call InitSound
 	xor a
 	ldh [hMapAnims], a
 	call ClearPalettes
 	xor a
 	ldh [rIF], a
-	ld a, 1 ; VBlank int
+	ld a, 1 << VBLANK
 	ldh [rIE], a
 	ei
 
@@ -97,7 +97,7 @@ Init::
 	call ClearSprites
 	call ClearsScratch
 
-	ld a, BANK(WriteOAMDMACodeToHRAM)
+	ld a, BANK(GameInit) ; aka BANK(WriteOAMDMACodeToHRAM)
 	rst Bankswitch
 
 	call WriteOAMDMACodeToHRAM
@@ -154,7 +154,7 @@ Init::
 
 	xor a
 	ldh [rIF], a
-	ld a, %1111 ; VBlank, LCDStat, Timer, Serial interrupts
+	ld a, IE_DEFAULT
 	ldh [rIE], a
 	ei
 
@@ -162,7 +162,7 @@ Init::
 
 	predef InitSGBBorder ; SGB init
 
-	call MapSetup_Sound_Off
+	call InitSound
 	xor a
 	ld [wMapMusic], a
 	jp GameInit

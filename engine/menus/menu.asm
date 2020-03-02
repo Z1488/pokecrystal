@@ -276,7 +276,7 @@ Unreferenced_Function241d5:
 	call Place2DMenuCursor
 .loop
 	call Move2DMenuCursor
-	call HDMATransferTileMapToWRAMBank3 ; BUG: This function is in another bank.
+	call HDMATransferTilemapToWRAMBank3 ; BUG: This function is in another bank.
 	                    ; Pointer in current bank (9) is bogus.
 	call .loop2
 	jr nc, .done
@@ -344,7 +344,7 @@ MenuJoypadLoop:
 
 Do2DMenuRTCJoypad:
 .loopRTC
-	call RTC
+	call UpdateTimeAndPals
 	call Menu_WasButtonPressed
 	ret c
 	ld a, [w2DMenuFlags1]
@@ -725,15 +725,15 @@ Unreferenced_Function24423:
 	ret
 
 Error_Cant_ExitMenu:
-	ld hl, .Text_NoWindowsAvailableForPopping
+	ld hl, .WindowPoppingErrorText
 	call PrintText
 	call WaitBGMap
-.InfiniteLoop:
-	jr .InfiniteLoop
+.infinite_loop
+	jr .infinite_loop
 
-.Text_NoWindowsAvailableForPopping:
-	text_far UnknownText_0x1c46b7
-	db "@"
+.WindowPoppingErrorText:
+	text_far _WindowPoppingErrorText
+	text_end
 
 _InitVerticalMenuCursor::
 	ld a, [wMenuDataFlags]

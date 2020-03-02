@@ -33,7 +33,7 @@ ForceUpdateCGBPals::
 .bgp
 rept (1 palettes) * 2
 	ld a, [hli]
-	ld [$ff00+c], a
+	ldh [c], a
 endr
 
 	dec b
@@ -49,7 +49,7 @@ endr
 .obp
 rept (1 palettes) * 2
 	ld a, [hli]
-	ld [$ff00+c], a
+	ldh [c], a
 endr
 
 	dec b
@@ -319,10 +319,10 @@ ReloadSpritesNoPalettes::
 	call DelayFrame
 	ret
 
-FarCallSwapTextboxPalettes::
-	homecall SwapTextboxPalettes
+SwapTextboxPalettes::
+	homecall _SwapTextboxPalettes
 	ret
 
-FarCallScrollBGMapPalettes::
-	homecall ScrollBGMapPalettes
+ScrollBGMapPalettes::
+	homecall _ScrollBGMapPalettes
 	ret

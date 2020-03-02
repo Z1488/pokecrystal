@@ -17,6 +17,7 @@ if _NARG <= 4
 	db \3 ; y
 	db \4 ; param
 else
+; LEGACY: Support the tile+offset format
 	db \1 ; object
 	db (\2) * 8 + (\3) ; x_tile, x
 	db (\4) * 8 + (\5) ; y_tile, y
@@ -83,14 +84,14 @@ anim_incbgeffect: MACRO
 	db \1 ; effect
 ENDM
 
-	enum anim_enemyfeetobj_command ; $d9
-anim_enemyfeetobj: MACRO
-	db anim_enemyfeetobj_command
+	enum anim_battlergfx_2row_command ; $d9
+anim_battlergfx_2row: MACRO
+	db anim_battlergfx_2row_command
 ENDM
 
-	enum anim_playerheadobj_command ; $da
-anim_playerheadobj: MACRO
-	db anim_playerheadobj_command
+	enum anim_battlergfx_1row_command ; $da
+anim_battlergfx_1row: MACRO
+	db anim_battlergfx_1row_command
 ENDM
 
 	enum anim_checkpokeball_command ; $db
@@ -208,8 +209,8 @@ ENDM
 anim_bgeffect: MACRO
 	db anim_bgeffect_command
 	db \1 ; effect
-	db \2 ; unknown
-	db \3 ; unknown
+	db \2 ; jumptable index
+	db \3 ; battle turn
 	db \4 ; unknown
 ENDM
 
@@ -231,9 +232,9 @@ anim_obp1: MACRO
 	db \1 ; colors
 ENDM
 
-	enum anim_clearsprites_command ; $f4
-anim_clearsprites: MACRO
-	db anim_clearsprites_command
+	enum anim_keepsprites_command ; $f4
+anim_keepsprites: MACRO
+	db anim_keepsprites_command
 ENDM
 
 	enum anim_0xf5_command ; $f5
